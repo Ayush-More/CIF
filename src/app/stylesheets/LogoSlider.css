@@ -1,0 +1,21 @@
+.moving {
+  white-space: nowrap;
+  padding: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.move {
+  display: inline-block;
+  animation: move 15s linear infinite;
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
