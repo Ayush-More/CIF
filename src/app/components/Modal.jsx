@@ -8,7 +8,7 @@ export default function Modal({ data, onClose }) {
 
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose(); // Close the modal if clicked outside
+      onClose(); 
     }
   };
 
@@ -17,10 +17,10 @@ export default function Modal({ data, onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[#0000008a]"
-      onClick={handleOutsideClick} // Attach the click handler to the overlay
+      onClick={handleOutsideClick}
     >
       <div
-        ref={modalRef} // Reference to the modal content
+        ref={modalRef} 
         className="bg-white rounded-lg p-6 w-[90%] max-w-[700px] flex gap-4"
       >
         <div className="w-[50%] h-[220px]">
@@ -63,7 +63,7 @@ export default function Modal({ data, onClose }) {
             <button
               onClick={() => {
                 document.body.style.overflow = "auto";
-                router.push("/profile");
+                router.push(`/profile/${data.id}`);
               }}
               className="cursor-pointer bg-[#EF5744] text-[#fff] rounded-full px-[22px] py-[9px] text-[13px]"
             >

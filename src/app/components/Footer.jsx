@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="flex justify-between">
           <div className="w-[25%]">
             <img
-              src="/Icons/footerLogo.svg"
+              src="/Icons/heartlogo.png"
               alt=""
               className="h-[49px] cursor-pointer"
             />

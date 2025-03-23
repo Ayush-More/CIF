@@ -1,6 +1,6 @@
 export default function SeekingCare() {
   return (
-    <div className="flex mt-[83px] gap-[35px]">
+    <div className="flex mt-[83px] md:gap-[35px] gap-0">
       <div className="w-[41%]">
         <div className="text-[46px] font-[500] leading-[54px]">
           What Are You Seeking Care For?

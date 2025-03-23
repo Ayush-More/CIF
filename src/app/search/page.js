@@ -22,13 +22,13 @@ export default function Search() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
-        <Navbar />
+      <Navbar />
+      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 py-16">
         <div>
           <div>
             <div className="flex justify-between mt-[38px]">
               <h1 className="text-[26px] font-[500]">Care’s Near You</h1>
-              <div className="flex gap-[13px]">
+              <div className="flex flex-col md:flex-row gap-[13px]">
                 <select
                   name="Category"
                   id=""

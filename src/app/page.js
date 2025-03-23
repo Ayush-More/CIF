@@ -9,10 +9,11 @@ import SeekingCare from "./components/SeekingCare";
 export default function Home() {
   return (
     <>
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
-        <Navbar />
-      </div>
+      <Navbar />
       <HeroSection />
+      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
+        <ImageSlider />
+      </div>
       <LogoSlider />
       <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
         <SeekingCare />

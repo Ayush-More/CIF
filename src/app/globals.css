@@ -2,11 +2,16 @@
 
 /* Apply the Inter font globally */
 :root {
-  --font-inter: 'Inter', sans-serif;
+  --font-inter: "Inter", sans-serif;
 }
 
 body {
   font-family: var(--font-inter);
+}
+
+
+.heading {
+  font-family: var(--font-merriweather);
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -16,8 +21,8 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .custom-select {
