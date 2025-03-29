@@ -4,8 +4,8 @@ const { carecardData } = data;
 export default function ProfileCard() {
   const data = carecardData[2];
   return (
-    <div className="bg-white rounded-lg w-full flex gap-4">
-      <div className="w-[40%] h-[225px]">
+    <div className="bg-white rounded-lg w-full flex flex-col md:flex-row gap-4">
+      <div className="md:w-[40%] h-[225px]">
         <img
           src={data.image}
           alt=""
@@ -13,7 +13,7 @@ export default function ProfileCard() {
         />
       </div>
       <div className="w-full flex flex-col gap-[14px]">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row gap-2 justify-between items-start">
           <div className="flex flex-col gap-1">
             <h1 className="text-[17px] text-[#101828] font-[600]">
               {data.name}
@@ -25,7 +25,7 @@ export default function ProfileCard() {
               </span>
             </div>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center mt-[1px] md:mt-0">
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((item) => {
                 return (

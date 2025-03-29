@@ -22,14 +22,18 @@ const bannerData = [
 
 export default function ImageSlider() {
   return (
-    <div className="flex gap-4 mt-16">
+    <div className="flex flex-col md:flex-row gap-4 mt-16">
       {bannerData.map((item, i) => {
         return (
           <div
             key={i}
-            className="h-[260px] w-[300px] rounded-2xl overflow-hidden relative"
+            className="h-[260px] md:w-[300px] rounded-2xl overflow-hidden relative"
           >
-            <img src={item.img} alt="" className="h-full w-full object-cover hover:scale-110 transition-transform duration-300 cursor-pointer" />
+            <img
+              src={item.img}
+              alt=""
+              className="h-full w-full object-cover hover:scale-110 transition-transform duration-300 cursor-pointer"
+            />
             <div className="absolute bottom-0 w-full h-16 flex justify-between px-4 items-center">
               <div className="text-[#fff] bg-[#000000a7] px-4 py-1 rounded-md text-[16px] heading">
                 {item.title}

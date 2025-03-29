@@ -52,7 +52,7 @@ export default function LoginContainer() {
   };
 
   return (
-    <div className="min-w-[400px] px-3 py-4 rounded-xl border border-[#0000001A]">
+    <div className="min-w-[400px] px-6 py-6 rounded-xl border border-[#0000001A]">
       <h1 className="text-[22px] font-[600]">Login</h1>
       <p className="text-[13px] text-[#475467] mb-5">
         Enter your email below to login to your account

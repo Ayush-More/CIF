@@ -1,7 +1,7 @@
 export default function CareCard({ data, handleCardClick }) {
   return (
-    <div className="bg-[#F9FAFB] p-[13px] border border-[#0000001A] rounded-2xl flex gap-[19px]">
-      <div className="w-[30%] h-[230px]">
+    <div className="bg-[#F9FAFB] p-[13px] border border-[#0000001A] rounded-2xl flex flex-col md:flex-row gap-[19px]">
+      <div className="md:w-[30%] h-[230px]">
         <img
           src={data.image}
           alt=""
@@ -9,7 +9,7 @@ export default function CareCard({ data, handleCardClick }) {
         />
       </div>
       <div className="w-full pt-[3px] flex flex-col justify-between">
-        <div className="flex justify-between px-[4px]">
+        <div className="flex justify-between md:px-[4px]">
           <div className="flex items-center gap-[5px]">
             <img src="/Icons/star.svg" alt="" className="h-[20px]" />
             <span className="font-[600] text-[18px]">4.5 (100)</span>
@@ -22,7 +22,7 @@ export default function CareCard({ data, handleCardClick }) {
           </div>
         </div>
         <div>
-          <h1 className="text-[18px] text-[#101828] font-[600]">
+          <h1 className="text-[18px] text-[#101828] font-[600] mt-1 md:mt-0">
             Shasta Weishampel
           </h1>
           <p className="text-[#475467] text-[13px] mt-[5px]">
@@ -31,7 +31,7 @@ export default function CareCard({ data, handleCardClick }) {
           </p>
         </div>
         <div>
-          <p className="text-[#475467] text-[13px]">Available Treatments</p>
+          <p className="text-[#475467] text-[13px] mt-2 md:mt-0">Available Treatments</p>
           <div className="flex gap-[13px]">
             {data.treatments.map((treatment, index) => {
               return (
@@ -51,7 +51,7 @@ export default function CareCard({ data, handleCardClick }) {
             })}
           </div>
         </div>
-        <div className="flex gap-[13px] mb-[13px]">
+        <div className="flex gap-[13px] mb-[13px] mt-4 md:mt-0">
           <button className="cursor-pointer border border-[#EF5744] text-[#EF5744] rounded-full px-[24px] py-[10px] text-[14px]">
             Contact Us
           </button>

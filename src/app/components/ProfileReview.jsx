@@ -18,7 +18,7 @@ export default function ProfileReview() {
       <div className="flex flex-col gap-8">
         {[1, 2, 3, 4].map((_) => {
           return (
-            <div className="flex items-start gap-7 w-[50%]">
+            <div className="flex items-start gap-7 md:w-[50%] mt-8 md:mt-0">
               <div className="w-7 h-7 rounded-full">
                 <img
                   src="/Images/review1.png"

@@ -10,15 +10,15 @@ export default function Profile() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-20">
+      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-20">
         <div className="flex mt-5 justify-between flex-col md:flex-row">
-          <div className="w-[68%]">
+          <div className="md:w-[68%]">
             <ProfileCard />
             <ProfileAbout />
             <ProfileImages />
             <ProfileOthers />
           </div>
-          <div className="w-[25%]">
+          <div className="md:w-[25%] mt-8 md:mt-0">
             <div className="border-2 sticky top-24 border-[#dadada84] w-full rounded-2xl p-[14px]">
               <h1 className="text-[18px] font-[700] text-[#101828]">
                 Call Shasta Weishampel

@@ -23,12 +23,16 @@ export default function Search() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 py-16">
+      <div className="max-w-7xl px-5 mx-auto md:px-10 lg:px-14 xl:px-20 pt-16 md:pb-16">
         <div>
           <div>
-            <div className="flex justify-between mt-[38px]">
+            <div className="flex flex-col md:flex-row justify-between mt-[38px]">
               <h1 className="text-[26px] font-[500]">Care’s Near You</h1>
-              <div className="flex flex-col md:flex-row gap-[13px]">
+              <div className="text-[12px] mt-[4px] text-[#475467] md:hidden mb-5">
+              We are dedicated to providing evidence-based information about
+              care centers across America
+            </div>
+              <div className="flex gap-[13px]">
                 <select
                   name="Category"
                   id=""
@@ -58,7 +62,7 @@ export default function Search() {
                 </select>
               </div>
             </div>
-            <div className="text-[12px] mt-[6px] text-[#475467]">
+            <div className="text-[12px] mt-[6px] text-[#475467] hidden md:block">
               We are dedicated to providing evidence-based information about
               care centers across America
             </div>

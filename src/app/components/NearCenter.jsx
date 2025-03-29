@@ -20,15 +20,15 @@ export default function NearCenterSlider() {
 
   return (
     <div>
-      <div className="mt-[90px] flex justify-between">
+      <div className="mt-[90px] flex flex-col md:flex-row justify-between">
         <div>
-          <h1 className="text-[47px] font-[500]">Centre’s Near You</h1>
+          <h1 className="text-[35px] md:text-[47px] font-[500]">Centre’s Near You</h1>
           <div className="text-[#475467] text-[14px]">
             We are dedicated to providing evidence-based information about
             addiction and treatment centers across America
           </div>
         </div>
-        <div className="flex items-center gap-[19px]">
+        <div className="flex items-center justify-between md:justify-start mt-5 md:mt-0 gap-[19px]">
           <div className="flex gap-[10px]">
             <div
               onClick={scrollLeft}
@@ -48,7 +48,7 @@ export default function NearCenterSlider() {
           </button>
         </div>
       </div>
-      <div className="w-full mt-[39px]">
+      <div className="w-full mt-5 md:mt-[39px]">
         <div
           ref={sliderRef}
           className="flex gap-[17px] overflow-x-auto scrollbar-hide snap-x snap-mandatory"

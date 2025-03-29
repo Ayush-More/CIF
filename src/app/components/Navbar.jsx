@@ -36,17 +36,20 @@ export default function Navbar() {
       }`}
     >
       <div
-        className={`flex py-4 justify-between max-w-7xl md:px-10 lg:px-14 xl:px-20 w-full items-center`}
+        className={`flex py-4 justify-between px-3 max-w-7xl md:px-10 lg:px-14 xl:px-20 w-full items-center`}
       >
         <div className="flex items-center">
           <img
+            onClick={() => {
+              router.push("/");
+            }}
             src="/Icons/heartlogo.png"
             alt=""
             className="h-[50px] cursor-pointer"
           />
         </div>
         <div>
-          <ul className="flex items-center gap-[35px] text-[14px] cursor-pointer">
+          <ul className="hidden md:flex items-center gap-[35px] text-[14px] cursor-pointer">
             <Link href={"/"} className="hover:text-[#EF5744]">
               Home
             </Link>
@@ -64,7 +67,7 @@ export default function Navbar() {
             </Link>
           </ul>
         </div>
-        <div className="flex items-center gap-[26px]">
+        <div className="hidden md:flex items-center gap-[26px]">
           <span
             onClick={() => {
               router.push("/login");

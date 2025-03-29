@@ -22,12 +22,12 @@ export default function Create() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-24">
+      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24">
         <div>
           <h1 className="font-[600] text-[28px] text-center">
             Choose The Type of Service, You are looking for
           </h1>
-          <div className="flex justify-center gap-8 mt-8">
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 mt-8">
             <div
               className="cursor-pointer"
               onClick={() => handleBannerClick("caregiver")}

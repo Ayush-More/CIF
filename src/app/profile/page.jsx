@@ -10,10 +10,10 @@ export default function Profile() {
     <>
       <Navbar />
       <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-20">
-        <div className="bg-[#F2F3F4] mt-7 rounded-md flex flex-col gap-6 pt-8 pb-20 px-10">
+        <div className="bg-[#F2F3F4] md:mt-7 rounded-md flex flex-col gap-6 pt-8 pb-20 md:px-10 px-6">
           {/* profile upper section */}
-          <div className="w-full flex items-start justify-between">
-            <div className="w-[55%]">
+          <div className="w-full flex flex-col-reverse md:flex-row items-start justify-between">
+            <div className="md:w-[55%]">
               <div className="h-40 w-40 rounded-full overflow-hidden">
                 <img
                   src="/Images/carecard1.jpeg"
@@ -56,7 +56,7 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-4 md:mb-0 w-full justify-end">
               <button className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer">
                 Repost
               </button>

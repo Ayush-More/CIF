@@ -78,7 +78,7 @@ export default function SignupContainer() {
   };
 
   return (
-    <div className="min-w-[400px] px-3 py-4 rounded-xl border border-[#0000001A]">
+    <div className="w-[400px] px-6 py-6 rounded-xl border border-[#0000001A]">
       <h1 className="text-[22px] font-[600]">
         {showOtp ? "Verify OTP" : "Signup"}
       </h1>

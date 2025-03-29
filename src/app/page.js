@@ -11,11 +11,11 @@ export default function Home() {
     <>
       <Navbar />
       <HeroSection />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
+      <div className="max-w-7xl px-5 mx-auto md:px-10 lg:px-14 xl:px-20">
         <ImageSlider />
       </div>
-      <LogoSlider />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
+      {/* <LogoSlider /> */}
+      <div className="max-w-7xl px-5 mx-auto md:px-10 lg:px-14 xl:px-20">
         <SeekingCare />
         <NearCenter />
       </div>

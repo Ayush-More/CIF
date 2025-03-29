@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "./context/AppContext.js";
+import FindJobProvider from "./context/FindJob";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${merriweather.variable} antialiased`}
       >
-        <AppProvider>{children}</AppProvider>
+        <FindJobProvider>
+          <AppProvider>{children}</AppProvider>
+        </FindJobProvider>
       </body>
     </html>
   );

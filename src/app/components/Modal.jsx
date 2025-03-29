@@ -8,7 +8,7 @@ export default function Modal({ data, onClose }) {
 
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose(); 
+      onClose();
     }
   };
 
@@ -20,10 +20,10 @@ export default function Modal({ data, onClose }) {
       onClick={handleOutsideClick}
     >
       <div
-        ref={modalRef} 
-        className="bg-white rounded-lg p-6 w-[90%] max-w-[700px] flex gap-4"
+        ref={modalRef}
+        className="bg-white rounded-lg p-4 md:p-6 w-[90%] max-w-[700px] flex flex-col md:flex-row gap-4"
       >
-        <div className="w-[50%] h-[220px]">
+        <div className="md:w-[50%] h-[220px]">
           <img
             src={data.image}
             alt=""
@@ -65,14 +65,16 @@ export default function Modal({ data, onClose }) {
                 document.body.style.overflow = "auto";
                 router.push(`/profile/${data.id}`);
               }}
-              className="cursor-pointer bg-[#EF5744] text-[#fff] rounded-full px-[22px] py-[9px] text-[13px]"
+              className="cursor-pointer bg-[#EF5744] text-[#fff] rounded-full px-5 md:px-[22px] py-[9px] text-[13px]"
             >
               View Profile
             </button>
           </div>
-          <div className="text-[13px] text-[#475467]">{data.description}</div>
+          <div className="text-[13px] text-[#475467] mt-4 md:mt-0">
+            {data.description}
+          </div>
           <div>
-            <h1 className="text-[15px] text-[#101828] font-[600]">
+            <h1 className="text-[15px] text-[#101828] font-[600] mt-4 md:mt-0">
               Highlights from the Shasta
             </h1>
             <div className="flex gap-[13px]">

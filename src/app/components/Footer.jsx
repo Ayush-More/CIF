@@ -1,15 +1,15 @@
 export default function Footer() {
   return (
-    <div className="bg-[#081253] py-[50px] mt-20">
+    <div className="bg-[#081253] px-6 py-[50px] mt-20">
       <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
-        <div className="flex justify-between">
-          <div className="w-[25%]">
+        <div className="flex flex-col gap-8 md:gap-0 md:flex-row justify-between">
+          <div className="md:w-[25%]">
             <img
               src="/Icons/heartlogo.png"
               alt=""
               className="h-[49px] cursor-pointer"
             />
-            <p className="text-[#FFFFFF99] text-[14px] mt-[28px] font-[400]">
+            <p className="text-[#FFFFFF99] md:text-[14px] mt-[28px] font-[400]">
               Design amazing digital experiences that create more happy in the
               world.
             </p>
@@ -35,8 +35,8 @@ export default function Footer() {
               <li>Support</li>
             </ul>
           </div>
-          <div className="flex items-start gap-[13px]">
-            <div className="bg-transparent flex gap-[13px] rounded-full px-[10px] py-[9px] justify-between border border-[#d8d8d870]">
+          <div className="flex flex-col md:flex-row items-start gap-[13px] md:justify-between">
+            <div className="bg-transparent flex gap-[13px] rounded-full px-[10px] py-[9px] justify-between border border-[#d8d8d870] w-full md:w-[65%]">
               <div>
                 <img
                   src="/Icons/search-normal.svg"
@@ -55,7 +55,7 @@ export default function Footer() {
             </button>
           </div>
         </div>
-        <div className="flex mt-[51px] border-t border-[#ffffff21] pt-[26px] gap-[32px] text-[#fff] text-[14px]">
+        <div className="flex flex-col md:flex-row mt-8 md:mt-[51px] border-t border-[#ffffff21] pt-[26px] gap-3 items-center md:items-start md:gap-[32px] text-[#fff] text-[14px]">
           <div>© 2024 Company. All rights reserved.</div>
           <div className="flex gap-[19px] cursor-pointer">
             <span>Terms</span>

@@ -1,45 +1,46 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
+import { FindJobContext } from "../../../context/FindJob";
 
 export default function CareType() {
-  const [selectedBanner, setSelectedBanner] = useState(null);
+  const [selected, setselected] = useState(null);
+  const { handleData } = useContext(FindJobContext);
   const router = useRouter();
 
-  const banners = [
+  const data = [
     {
-      id: "childcare",
       label: "Child care",
       image: "/Images/childcare.svg",
       link: "/care/enrollment/childcare/availability",
+      slug: "child-care",
     },
     {
-      id: "mentalphysical",
       label: "Mental and Physical health",
       image: "/Images/mentalphysical.svg",
       link: "/care/enrollment/mentalphysical/availability",
+      slug: "mental-and-physical-health",
     },
     {
-      id: "mealservice",
       label: "Meal Service",
       image: "/Images/mealservice.svg",
       link: "/care/enrollment/mealservice/availability",
+      slug: "meal-service",
     },
     {
-      id: "tutoring",
       label: "Tutoring",
       image: "/Images/tutoring.svg",
       link: "/care/enrollment/tutoring/availability",
+      slug: "tutoring",
     },
   ];
 
   const handleNextClick = () => {
-    const selectedBannerData = banners.find(
-      (banner) => banner.id === selectedBanner
-    );
-    if (selectedBannerData) {
-      router.push(selectedBannerData.link);
+    const selectedData = data.find((banner) => banner.slug === selected?.slug);
+    if (selectedData) {
+      handleData({ jobTitle: selected.slug });
+      router.push(selectedData.link);
     }
   };
 
@@ -75,17 +76,17 @@ export default function CareType() {
             </div>
           </div>
           <div className="flex flex-wrap justify-center gap-8 mt-10">
-            {banners.map((banner) => (
+            {data.map((banner) => (
               <div
-                key={banner.id}
+                key={banner.slug}
                 className="flex flex-col items-center cursor-pointer"
-                onClick={() => setSelectedBanner(banner.id)}
+                onClick={() => setselected(banner)}
               >
                 <img
                   src={banner.image}
                   alt={banner.label}
                   className={`w-48 hover:border-2 hover:border-[#EF5744] hover:rounded-xl ${
-                    selectedBanner === banner.id
+                    selected?.slug === banner.slug
                       ? "border-2 border-[#EF5744] rounded-xl"
                       : ""
                   }`}
@@ -105,12 +106,12 @@ export default function CareType() {
             </button>
             <button
               className={`w-20 rounded-full px-[22px] py-[9px] text-[13px] ${
-                selectedBanner
+                selected
                   ? "bg-[#EF5744] text-[#ffffff] cursor-pointer"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
               onClick={handleNextClick}
-              disabled={!selectedBanner}
+              disabled={!selected}
             >
               Next
             </button>
