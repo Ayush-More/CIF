@@ -1,10 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { AppContext } from "../context/AppContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { setIsOpen } = useContext(AppContext);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -84,6 +86,16 @@ export default function Navbar() {
           >
             Join now
           </button>
+        </div>
+        <div
+          onClick={() => {
+            setIsOpen(true);
+          }}
+          class="flex flex-col items-end cursor-pointer transition-all duration-500"
+        >
+          <span class="block h-[3px] w-5 bg-[#000]"></span>
+          <span class="block h-[3px] w-7.5 bg-[#000] mt-2"></span>
+          <span class="block h-[3px] w-5 bg-[#000] mt-2"></span>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "./context/AppContext.js";
 import FindJobProvider from "./context/FindJob";
+import SidebarMobile from "./components/SidebarMobile"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -33,7 +34,10 @@ export default function RootLayout({ children }) {
         className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${merriweather.variable} antialiased`}
       >
         <FindJobProvider>
-          <AppProvider>{children}</AppProvider>
+          <AppProvider>
+            <SidebarMobile/>
+            {children}
+            </AppProvider>
         </FindJobProvider>
       </body>
     </html>
