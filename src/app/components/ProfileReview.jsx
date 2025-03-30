@@ -26,7 +26,7 @@ export default function ProfileReview() {
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex w-[85%] flex-col gap-3">
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((item) => {
                     return <img src="/Icons/star.svg" alt="" className="h-4" />;

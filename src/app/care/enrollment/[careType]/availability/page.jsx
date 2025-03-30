@@ -44,7 +44,7 @@ export default function Availability() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
+      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
         <div className="w-[55%] mx-auto">
           <h1 className="font-[600] text-[28px] text-center">
             Choose your preferred frequency and timing

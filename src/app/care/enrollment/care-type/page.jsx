@@ -47,31 +47,33 @@ export default function CareType() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
+      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
         <div>
           <h1 className="font-[600] text-[28px] text-center">
             Choose The Type of Service, You are looking for
           </h1>
-          <div className="flex justify-center">
-            <div className="flex gap-5 items-center mt-8">
-              <div className="flex flex-col items-center gap-2">
+          <div className="flex justify-center pb-8">
+            <div className="flex gap-6 items-center mt-8">
+              <div className="flex flex-col items-center gap-2 relative">
                 <img src="/Icons/correct.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Service Type</div>
+                <div className="absolute top-8 text-[11px] text-center">Service Type</div>
               </div>
-              <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
-              <div className="flex flex-col items-center gap-2">
+              <div className="bg-[#EF5744] h-[2px] w-10"></div>
+              <div className="flex flex-col items-center gap-2 relative">
                 <img src="/Icons/active.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Services</div>
+                <div className="absolute top-8 text-[11px] text-center">Services</div>
               </div>
-              <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
-              <div className="flex flex-col items-center gap-2">
+              <div className="bg-[#EF5744] h-[2px] w-10"></div>
+              <div className="flex flex-col items-center gap-2 relative">
                 <img src="/Icons/unactive.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Availability</div>
+                <div className="absolute top-8 text-[11px] text-center">Availability</div>
               </div>
-              <div className="bg-[#EAECF0] h-[2px] w-10 mb-7"></div>
-              <div className="flex flex-col items-center gap-2">
+              <div className="bg-[#EAECF0] h-[2px] w-10"></div>
+              <div className="flex flex-col items-center gap-2 relative">
                 <img src="/Icons/unactive.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Personal Details</div>
+                <div className="absolute top-8 text-[11px] text-center">
+                  Personal Details
+                </div>
               </div>
             </div>
           </div>

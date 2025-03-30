@@ -38,7 +38,7 @@ export default function Navbar() {
       }`}
     >
       <div
-        className={`flex py-4 justify-between px-3 max-w-7xl md:px-10 lg:px-14 xl:px-20 w-full items-center`}
+        className={`flex py-4 justify-between pl-3 pr-4 max-w-7xl md:px-10 lg:px-14 xl:px-20 w-full items-center`}
       >
         <div className="flex items-center">
           <img
@@ -91,7 +91,7 @@ export default function Navbar() {
           onClick={() => {
             setIsOpen(true);
           }}
-          class="flex flex-col items-end cursor-pointer transition-all duration-500"
+          class="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
         >
           <span class="block h-[3px] w-5 bg-[#000]"></span>
           <span class="block h-[3px] w-7.5 bg-[#000] mt-2"></span>

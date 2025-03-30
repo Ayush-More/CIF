@@ -50,7 +50,7 @@ export default function Sidebar() {
     <div
       className={`bg-[#FCF1E8] py-6 h-screen w-screen fixed top-0 z-40 transform ${
         isOpen ? "translate-x-0" : "translate-x-full"
-      } transition-transform duration-500`}
+      } transition-transform duration-400`}
     >
       <div className="flex pl-4 pr-6 justify-between items-center">
         <img
@@ -60,7 +60,7 @@ export default function Sidebar() {
         />
         <div
           onClick={() => setIsOpen(false)}
-          className="bg-[#EF5744] w-10 h-10 flex items-center justify-center rounded-[4px]"
+          className="bg-[#EF5744] w-8 h-8 flex items-center justify-center rounded-[4px]"
         >
           <svg
             stroke="currentColor"
@@ -82,7 +82,7 @@ export default function Sidebar() {
           {navbarData.map((item, index) => (
             <div key={index}>
               <div
-                className="flex justify-between items-center h-14" // Increased from h-12 to h-14
+                className="flex justify-between items-center h-14"
                 onClick={() => handleItemClick(item, index)}
               >
                 <Link
@@ -92,7 +92,7 @@ export default function Sidebar() {
                   {item.name}
                 </Link>
                 {item.subitem && (
-                  <p className="font-[500] text-[25px] cursor-pointer">
+                  <p className="font-[500] text-[#8C746A] text-[25px] cursor-pointer">
                     {openItems[index] ? "-" : "+"}
                   </p>
                 )}
@@ -112,8 +112,8 @@ export default function Sidebar() {
                       onClick={() => handleSubitemClick(sub)}
                       className="cursor-pointer"
                     >
-                      <p className="text-[#8C746A] pl-5 text-[14px] hover:text-[#EF5744] h-12 flex items-center">
-                        {sub} {/* Increased from h-10 to h-12 */}
+                      <p className="text-[#8C746A] font-[500] pl-5 text-[14px] hover:text-[#EF5744] h-12 flex items-center">
+                        {sub}
                       </p>
                       <div className="h-[2px] bg-[#8c746a1d]"></div>
                     </div>
@@ -122,6 +122,27 @@ export default function Sidebar() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="flex px-6 mt-10 items-center gap-[26px]">
+        <span
+          onClick={() => {
+            setIsOpen(false);
+            router.push("/login");
+          }}
+          className="text-[16px] cursor-pointer font-[500] text-[#8C746A]"
+        >
+          Login
+        </span>
+        <button
+          onClick={() => {
+            setIsOpen(false);
+            router.push("/signup");
+          }}
+          className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
+        >
+          Join now
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 // services/auth.js
 export const signupUser = async (BASE_URL, userData) => {
-  const response = await fetch(`${BASE_URL}/auth/register`, {
+  const response = await fetch(`/api/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

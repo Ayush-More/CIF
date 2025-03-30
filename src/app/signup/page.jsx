@@ -5,7 +5,7 @@ export default function Signup() {
   return (
     <>
       <Navbar />
-      <div className="py-24 flex justify-center">
+      <div className="py-24 px-5 flex justify-center">
         <SignupContainer />
       </div>
     </>
