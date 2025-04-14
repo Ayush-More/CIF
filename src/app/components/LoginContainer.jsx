@@ -1,16 +1,17 @@
 "use client";
+
 import { FcGoogle } from "react-icons/fc";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState , useContext } from "react";
 import { AppContext } from "../context/AppContext.js";
 import InputField from "../components/InputField";
 import { validateLoginForm } from "../utils/validation";
-import { loginUser } from "../services/auth";
+import {loginUser} from "../services/auth";
 
 export default function LoginContainer() {
-  const { BASE_URL } = useContext(AppContext);
   const router = useRouter();
-
+const { BASE_URL } = useContext(AppContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,28 +28,32 @@ export default function LoginContainer() {
     setIsSubmitted(true);
 
     if (validateLoginForm(formData, setErrors)) {
-      try {
-        const data = await loginUser(BASE_URL, {
-          email: formData.email,
-          password: formData.password,
-        });
+      const result = await loginUser(BASE_URL, {
+        email: formData.email,
+        password: formData.password,
+      });
 
-        if (data.success) {
-          // Adjust based on your backend response
-          router.push("/dashboard");
-        } else {
-          setErrors((prev) => ({
-            ...prev,
-            email: data.message || "Login failed",
-          }));
-        }
-      } catch (error) {
+      if (result.success) {
+        router.push("/");
+      } else {
         setErrors((prev) => ({
           ...prev,
-          email: "An error occurred during login",
+          email: "Invalid email or password",
         }));
       }
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    await signIn("google", {
+      callbackUrl: "/",
+    });
+  };
+
+  const handleFacebookLogin = async () => {
+    await signIn("facebook", {
+      callbackUrl: "/",
+    });
   };
 
   return (
@@ -101,12 +106,18 @@ export default function LoginContainer() {
         <span className="text-[16px]">or</span>
         <div className="w-[48%] h-[1px] bg-[#0000001A]"></div>
       </div>
-      <button className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]">
+      <button
+        className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
+        onClick={handleGoogleLogin}
+      >
         <FcGoogle className="text-[20px]" />
         Login with Google
       </button>
-      <button className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]">
-        <img src="/Icons/facebook.svg" alt="" className="h-5"/>
+      <button
+        className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
+        onClick={handleFacebookLogin}
+      >
+        <img src="/Icons/facebook.svg" alt="" className="h-5" />
         Login with Facebook
       </button>
       <div className="text-center mt-5 text-[13px]">

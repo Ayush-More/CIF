@@ -21,14 +21,18 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "src/app/care/enrollment/[careType]/availability/page.jsx", "src/app/care/enrollment/[careType]/page.jsx", "src/app/care/enrollment/[careType]/personal-details/page.jsx"  ],
+    "**/*.tsx",
+    "src/app/care/enrollment/[careType]/availability/page.jsx",
+    "src/app/care/enrollment/[careType]/page.jsx",
+    "src/app/care/enrollment/[careType]/personal-details/page.jsx"
+  ],
   "exclude": [
     "node_modules"
   ]

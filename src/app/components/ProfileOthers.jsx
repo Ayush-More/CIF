@@ -1,4 +1,4 @@
-export default function ProfileOthers() {
+export default function ProfileOthers({data}) {
   return (
     <div className="w-full mt-8">
       <div>
@@ -10,15 +10,7 @@ export default function ProfileOthers() {
           Experience
         </div>
         <div className="text-[#475467] text-[13px] mt-4">
-          Sukoon Health provides behavioral, mental health, and learning
-          disability treatment for adolescents. They offer a women-only
-          treatment program with only women on staff. Sukoon Health also
-          provides geriatric psychiatric care for older adults. They provide
-          adjunct therapies for all ages, including rTMS (repeated transcranial
-          magnetic stimulation), art therapy with on-staff art therapists, yoga,
-          and exercise with an on-site fitness studio. Sukoon Health
-          additionally helps international clients with their visa process and
-          airport transfers.
+         {data?.about}
         </div>
         <img src="/Icons/trusted.svg" alt="" className="h-16 mt-4" />
       </div>

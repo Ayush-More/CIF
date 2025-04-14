@@ -13,18 +13,18 @@ const getInitialFindJobData = () => {
 const FindJobProvider = ({ children }) => {
   const [findJobData, setFindJobData] = useState(getInitialFindJobData);
 
-  const getProfile = async () => {
-    try {
-      const res = await fetch("/api/profile/getProfile");
-      const data = await res.json();
-      // console.log("Profile Data:", data); // Debugging log
-      if (data.user) {
-        setFindJobData({ ...data.user, mode: "edit" });
-      }
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    }
-  };
+  // const getProfile = async () => {
+  //   try {
+  //     const res = await fetch("/api/profile/getProfile");
+  //     const data = await res.json();
+  //     // console.log("Profile Data:", data); // Debugging log
+  //     if (data.user) {
+  //       setFindJobData({ ...data.user, mode: "edit" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching profile data:", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (findJobData !== undefined) {
@@ -39,7 +39,7 @@ const FindJobProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      getProfile();
+      // getProfile();
     }
   }, []);
 

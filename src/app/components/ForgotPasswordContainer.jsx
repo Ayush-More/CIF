@@ -1,12 +1,34 @@
 "use client";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState , useContext } from "react";
+import { AppContext } from "../context/AppContext.js";
+import InputField from "../components/InputField";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { forgotPassword } from "../services/auth";
 
 export default function ForgotPasswordContainer() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const { BASE_URL } = useContext(AppContext);
+  const [errors, setErrors] = useState({}); 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+
+  const handleForgotPassword = async () => {
+    setIsSubmitted(true);
+    setErrors({}); 
+    try {
+      const response = await forgotPassword(BASE_URL , email);
+      if (response.success) {
+        router.push("/verify-otp");
+      } else {
+        setErrors({ email: response.message || "Failed to send OTP" });
+      }
+    } catch (error) {
+      setErrors({ email: error.message || "Something went wrong" });
+    }
+  };
 
   return (
     <div className="min-w-[400px] px-3 py-4 rounded-xl border border-[#0000001A]">
@@ -17,14 +39,18 @@ export default function ForgotPasswordContainer() {
 
       <div className="mt-5">
         <p className="text-[14px] mb-2">Email</p>
-        <input
+        <InputField
           type="email"
-          className="w-full text-[13px] px-2 py-[8px] outline-none border border-[#0000001A] rounded-md"
+          label="Email"
+          value={email}
+          onChange={setEmail(email)}
           placeholder="me@gmail.com"
+          error={errors.email}
+          isSubmitted={isSubmitted}
         />
       </div>
 
-      <button className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer">
+      <button className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer" onClick={handleForgotPassword}>
         Get OTP
       </button>
       <div className="flex justify-center gap-5 mt-5 text-[13px]">

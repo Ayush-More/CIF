@@ -91,11 +91,11 @@ export default function Navbar() {
           onClick={() => {
             setIsOpen(true);
           }}
-          class="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
+          className="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
         >
-          <span class="block h-[3px] w-5 bg-[#000]"></span>
-          <span class="block h-[3px] w-7.5 bg-[#000] mt-2"></span>
-          <span class="block h-[3px] w-5 bg-[#000] mt-2"></span>
+          <span className="block h-[3px] w-5 bg-[#000]"></span>
+          <span className="block h-[3px] w-7.5 bg-[#000] mt-2"></span>
+          <span className="block h-[3px] w-5 bg-[#000] mt-2"></span>
         </div>
       </div>
     </div>
