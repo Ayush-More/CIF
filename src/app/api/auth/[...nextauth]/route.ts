@@ -5,7 +5,7 @@ import User from "./../../../../lib/models/User";
 import connectToDatabase from "./../../../../lib/mongodb";
 import jwt from "jsonwebtoken";
 
-export const authOptions = {
+const authOptions = {
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_ID!,

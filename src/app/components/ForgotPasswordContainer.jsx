@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState , useContext } from "react";
 import { AppContext } from "../context/AppContext.js";
 import InputField from "../components/InputField";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { forgotPassword } from "../services/auth";
 
 export default function ForgotPasswordContainer() {
@@ -43,7 +42,7 @@ export default function ForgotPasswordContainer() {
           type="email"
           label="Email"
           value={email}
-          onChange={setEmail(email)}
+          onChange={(value) => setEmail(value)}
           placeholder="me@gmail.com"
           error={errors.email}
           isSubmitted={isSubmitted}

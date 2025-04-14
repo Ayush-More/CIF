@@ -92,18 +92,18 @@ export const forgotPassword = async (BASE_URL , email) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(email),
+    body: JSON.stringify({ email }),
   });
   return response.json();
 };
 
-export const resetPassword = async (BASE_URL , password) => {
+export const resetPassword = async (BASE_URL , { email, password }) => {
   const response = await fetch(`${BASE_URL}/auth/reset-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(password),
+    body: JSON.stringify({ email, password }),
   });
   return response.json();
 };
