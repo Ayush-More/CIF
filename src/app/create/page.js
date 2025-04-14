@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 
+
 export default function Create() {
   const [selectedBanner, setSelectedBanner] = useState(null);
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function Create() {
     <>
       <Navbar />
       <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24">
+        
         <div className="pb-10">
           <h1 className="font-[600] text-[28px] text-center">
             Choose The Type of Service, You are looking for

@@ -134,6 +134,7 @@ import Navbar from '../../../components/Navbar';
 import { useCareForm } from '../../../context/CareFormContext';
 
 export default function CareType() {
+  const [isLoading, setIsLoading] = useState(false); // NEW STATE
   const [selected, setSelected] = useState(null);
   const { updateForm } = useCareForm();
   const router = useRouter();
@@ -166,16 +167,23 @@ export default function CareType() {
   ];
 
   const handleNextClick = () => {
+    setIsLoading(true); // Start loader
     if (selected) {
       updateForm({ category: selected });
       router.push(`/care/enrollment/${selected}/availability`); // Go to next step
     }
+    setIsLoading(false); // Stop loader on error
   };
 
   return (
     <>
       <Navbar />
       <div className="max-w-7xl px-6 mx-auto pt-24 pb-10">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+          <div className="loader"></div> {/* Spinner */}
+        </div>
+      )}
         <h1 className="font-semibold text-2xl text-center">
           Choose The Type of Service You Are Offering
         </h1>

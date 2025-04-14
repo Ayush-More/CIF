@@ -25,6 +25,7 @@ export default function SignupContainer() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // NEW STATE
 
   const handleChange = (field) => (e) =>
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -35,18 +36,20 @@ export default function SignupContainer() {
 
     if (validateForm(formData, setErrors)) {
       try {
+        setIsLoading(true); // Start loader
         const data = await signupUser(BASE_URL, {
           email: formData.email,
           fullName: formData.firstName + ` ` + formData.lastName,
           password: formData.password,
         });
+        setIsLoading(false); // Stop loader
 
         if (data.message === "Otp has been sent successfully") {
           setShowOtp(true);
-          console.log(data , 99999);
+          console.log(data, 99999);
           updateForm({
             user_id: data.newUser._id,
-          })
+          });
         } else {
           setErrors((prev) => ({
             ...prev,
@@ -54,6 +57,7 @@ export default function SignupContainer() {
           }));
         }
       } catch (error) {
+        setIsLoading(false); // Stop loader on error
         setErrors((prev) => ({
           ...prev,
           email: "An error occurred during signup",
@@ -62,33 +66,42 @@ export default function SignupContainer() {
     }
   };
 
-
   const handleGoogleLogin = async () => {
+    setIsLoading(true); // Start loader
     await signIn("google", {
       callbackUrl: "/",
     });
+    setIsLoading(false); // Stop loader
   };
 
   const handleFacebookLogin = async () => {
+    setIsLoading(true); // Start loader
     await signIn("facebook", {
       callbackUrl: "/",
     });
+    setIsLoading(false); // Stop loader
   };
 
   const handleOtpVerify = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true); // Start loader
       const data = await verifyOtp(BASE_URL, {
         email: formData.email,
         otp: formData.otp,
       });
+      setIsLoading(false); // Stop loader
 
       if (data.success) {
         router.push("/create");
       } else {
-        setErrors((prev) => ({ ...prev, otp: data.message || "Invalid OTP" }));
+        setErrors((prev) => ({
+          ...prev,
+          otp: data.message || "Invalid OTP",
+        }));
       }
     } catch (error) {
+      setIsLoading(false); // Stop loader on error
       setErrors((prev) => ({
         ...prev,
         otp: "An error occurred during OTP verification",
@@ -97,7 +110,12 @@ export default function SignupContainer() {
   };
 
   return (
-    <div className="w-[400px] px-6 py-6 rounded-xl border border-[#0000001A]">
+    <div className="w-[400px] px-6 py-6 rounded-xl border border-[#0000001A] relative">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+          <div className="loader"></div> {/* Spinner */}
+        </div>
+      )}
       <h1 className="text-[22px] font-[600]">
         {showOtp ? "Verify OTP" : "Signup"}
       </h1>
@@ -151,8 +169,9 @@ export default function SignupContainer() {
           <button
             type="submit"
             className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer"
+            disabled={isLoading} // Disable button while loading
           >
-            Signup
+            {isLoading ? "Loading..." : "Signup"}
           </button>
         </form>
       ) : (
@@ -169,8 +188,9 @@ export default function SignupContainer() {
           <button
             type="submit"
             className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer"
+            disabled={isLoading} // Disable button while loading
           >
-            Verify OTP
+            {isLoading ? "Loading..." : "Verify OTP"}
           </button>
         </form>
       )}
@@ -182,11 +202,19 @@ export default function SignupContainer() {
             <span className="text-[16px]">or</span>
             <div className="w-[48%] h-[1px] bg-[#0000001A]"></div>
           </div>
-          <button className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]" onClick = {handleGoogleLogin}>
+          <button
+            className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
+            onClick={handleGoogleLogin}
+            disabled={isLoading} // Disable button while loading
+          >
             <FcGoogle className="text-[20px]" />
             Signup with Google
           </button>
-          <button className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]" onClick={handleFacebookLogin}>
+          <button
+            className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
+            onClick={handleFacebookLogin}
+            disabled={isLoading} // Disable button while loading
+          >
             <img src="/Icons/facebook.svg" alt="" className="h-5" />
             Login with Facebook
           </button>

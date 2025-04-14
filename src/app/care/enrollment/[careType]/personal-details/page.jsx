@@ -7,6 +7,7 @@ import { useCareForm } from '../../../../context/CareFormContext';
 import {createCare} from "./../../../../services/auth";
 
 export default function PersonalData() {
+  const [isLoading, setIsLoading] = useState(false); // NEW STATE
   const { BASE_URL } = useContext(AppContext);
   const { updateForm , formData } = useCareForm();
   const [profilePic, setprofilePic] = useState(null);
@@ -73,6 +74,7 @@ export default function PersonalData() {
   
 
   const handleNextClick = async () => {
+    setIsLoading(true); // Start loader
     if (username && gender && dateOfBirth && about && skills && profilePic) {
       const updatedData = {
         ...formData,
@@ -83,7 +85,7 @@ export default function PersonalData() {
         skills,
         profilePic,
       };
-  
+      setIsLoading(false); // Stop loader on error
       updateForm(updatedData); // still update context for global state
       try {
         console.log(formData , 7777777);
@@ -93,10 +95,12 @@ export default function PersonalData() {
           router.push("/");
         }
       }  catch (err) {
+        setIsLoading(false); // Stop loader on error
         alert("Something went wrong while submitting the form.");
         console.error(err);
       }
     } else {
+      setIsLoading(false); // Stop loader
       alert("Please fill all the fields and upload a profile picture.");
     }
   };
@@ -106,6 +110,11 @@ export default function PersonalData() {
     <>
       <Navbar />
       <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+          <div className="loader"></div> {/* Spinner */}
+        </div>
+      )}
         <div className="w-[55%] mx-auto">
           <h1 className="font-[600] text-[28px]">Personal Details</h1>
           <div className="flex justify-center">

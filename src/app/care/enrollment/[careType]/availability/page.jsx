@@ -304,6 +304,7 @@ import Navbar from "../../../../components/Navbar";
 import { useCareForm } from "../../../../context/CareFormContext"; // ⬅️ import context
 
 export default function Availability() {
+  const [isLoading, setIsLoading] = useState(false); // NEW STATE
   const { updateForm , formData } = useCareForm(); // ⬅️ access context
   const [selectedDays, setSelectedDays] = useState(formData.workingDays);
   const [selectedTiming, setSelectedTiming] = useState(formData.timings);
@@ -341,6 +342,7 @@ export default function Availability() {
   };
 
   const handleNextClick = () => {
+    setIsLoading(true); // Start loader
     const validLanguages = languages.every(
       (lang) => lang.language && lang.proficiency
     );
@@ -353,9 +355,10 @@ export default function Availability() {
         languages,
         hourlyRate: Number(hourlyRate),
       }); // ⬅️ saving in context
-
+      setIsLoading(false); // Start loader
       router.push(`/care/enrollment/${formData.category}/personal-details`);
     } else {
+      setIsLoading(false); // Stop loader
       alert("Please complete all fields before proceeding.");
     }
   };
@@ -364,6 +367,11 @@ export default function Availability() {
     <>
       <Navbar />
       <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24 pb-10">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+          <div className="loader"></div> {/* Spinner */}
+        </div>
+      )}
         <div className="w-[55%] mx-auto">
           <h1 className="font-[600] text-[28px] text-center">
             Choose your preferred frequency and timing
