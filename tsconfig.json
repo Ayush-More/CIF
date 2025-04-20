@@ -32,7 +32,7 @@
     "src/app/care/enrollment/[careType]/availability/page.jsx",
     "src/app/care/enrollment/[careType]/page.jsx",
     "src/app/care/enrollment/[careType]/personal-details/page.jsx"
-  ],
+, "src/app/profile/[user]/page.tsx"  ],
   "exclude": [
     "node_modules"
   ]
