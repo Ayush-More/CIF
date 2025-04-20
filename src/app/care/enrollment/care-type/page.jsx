@@ -201,7 +201,7 @@ export default function CareType() {
               <div className="bg-[#EF5744] h-[2px] w-10"></div>
               <div className="flex flex-col items-center gap-2 relative">
                 <img src="/Icons/unactive.svg" alt="" className="h-7" />
-                <div className="absolute top-8 text-[11px] text-center">Availability</div>
+                <div className="absolute top-8 text-[11px] text-center">Availability and Details</div>
               </div>
               <div className="bg-[#EAECF0] h-[2px] w-10"></div>
               <div className="flex flex-col items-center gap-2 relative">

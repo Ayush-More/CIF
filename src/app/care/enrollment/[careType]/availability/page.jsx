@@ -47,34 +47,42 @@ export default function Availability() {
   const handleHourlyRateChange = (e) => {
     setHourlyRate(e.target.value);
   };
-  const handleBackClick = async () =>{
-    updateForm({
+  const handleBackClick = async () => {
+    // Save all form data before navigating back
+    const formDataToUpdate = {
       workingDays: selectedDays,
       timings: selectedTiming,
       languages,
       hourlyRate: Number(hourlyRate),
-    });
- }
+    };
+
+    updateForm(formDataToUpdate);
+  };
 
   const handleNextClick = () => {
-    setIsLoading(true); // Start loader
+    setIsLoading(true);
     const validLanguages = languages.every(
       (lang) => lang.language && lang.proficiency
     );
 
-    if (selectedDays.length && selectedTiming && validLanguages) {
-      updateForm({
-        workingDays: selectedDays,
-        timings: selectedTiming,
-        languages,
-        hourlyRate: Number(hourlyRate),
-      }); // ⬅️ saving in context
-      setIsLoading(false); // Start loader
-      router.push(`/care/enrollment/${formData.category}/personal-details`);
-    } else {
-      setIsLoading(false); // Stop loader
-      alert("Please complete all fields before proceeding.");
+    // Basic validation
+    if (!selectedDays.length || !selectedTiming || !validLanguages) {
+      setIsLoading(false);
+      alert("Please complete all required fields before proceeding.");
+      return;
     }
+
+    // Save form data
+    const formDataToUpdate = {
+      workingDays: selectedDays,
+      timings: selectedTiming,
+      languages,
+      hourlyRate: Number(hourlyRate),
+    };
+
+    updateForm(formDataToUpdate);
+    setIsLoading(false);
+    router.push(`/care/enrollment/${formData.category}/additional-details`);
   };
 
   return (
@@ -106,6 +114,11 @@ export default function Availability() {
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/active.svg" alt="" className="h-7" />
                 <div className="text-[11px]">Availability</div>
+              </div>
+              <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
+              <div className="flex flex-col items-center gap-2">
+                <img src="/Icons/unactive.svg" alt="" className="h-7" />
+                <div className="text-[11px]">Additional Details</div>
               </div>
               <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
               <div className="flex flex-col items-center gap-2">
