@@ -1,5 +1,5 @@
-import Navbar from "../components/Navbar";
-import VerifyOtpContainer from "../components/VerifyOtpContainer";
+import Navbar from "./../../components/Navbar";
+import VerifyOtpContainer from "./../../components/VerifyOtpContainer";
 
 export default function VerifyOtp() {
   return (

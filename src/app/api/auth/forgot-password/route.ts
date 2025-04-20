@@ -30,8 +30,13 @@ export async function POST(req: NextRequest) {
         });
 
         await sendEmail(email, 'Password Reset OTP', `Your OTP is: ${otp}`);
-        console.log("Hello");
-        return NextResponse.json({ message: 'OTP sent to email' });
+
+        // Include the user ID in the response
+        return NextResponse.json({
+            message: 'OTP sent to email',
+            userId: user._id, // Add the user ID here
+            success: true,
+        });
     } catch (error) {
         return NextResponse.json({ message: 'Internal server error', error }, { status: 500 });
     }

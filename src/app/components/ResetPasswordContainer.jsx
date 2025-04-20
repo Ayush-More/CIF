@@ -16,6 +16,7 @@ export default function ResetPasswordContainer() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // NEW STATE
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -28,49 +29,62 @@ export default function ResetPasswordContainer() {
   const handleResetPassword = async () => {
     setIsSubmitted(true);
     setErrors({});
-    
+    setIsLoading(true); // Show the loader
+
     // Basic validation
     if (!email) {
-      setErrors(prev => ({ ...prev, email: "Email is required" }));
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+      setIsLoading(false); // Stop the loader
       return;
     }
-    
+
     if (!password) {
-      setErrors(prev => ({ ...prev, password: "Password is required" }));
+      setErrors((prev) => ({ ...prev, password: "Password is required" }));
+      setIsLoading(false); // Stop the loader
       return;
     }
-    
+
     if (password !== confirmPassword) {
-      setErrors(prev => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      setIsLoading(false); // Stop the loader
       return;
     }
-    
+
     try {
       const response = await resetPassword(BASE_URL, { email, password });
+      setIsLoading(false); // Stop the loader
+
       if (response.success) {
         router.push("/login");
       } else {
         setErrors({ general: response.message || "Failed to reset password" });
       }
     } catch (error) {
+      setIsLoading(false); // Stop the loader
       setErrors({ general: error.message || "Something went wrong" });
     }
   };
 
   return (
-    <div className="min-w-[400px] px-3 py-4 rounded-xl border border-[#0000001A]">
+    <div className="relative min-w-[400px] px-3 py-4 mt-10 rounded-xl border border-[#0000001A]">
+      {/* Loader Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+          <div className="loader border-4 border-t-[#EF5744] border-gray-200 rounded-full w-8 h-8 animate-spin"></div>
+        </div>
+      )}
+
       <h1 className="text-[22px] font-[600]">Reset Password</h1>
       <p className="text-[13px] text-[#475467]">
         Enter your email and new password
       </p>
 
       <div className="mt-5">
-        <p className="text-[14px] mb-2">Email</p>
         <InputField
           type="email"
           label="Email"
           value={email}
-          onChange={(value) => setEmail(value)}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="me@gmail.com"
           error={errors.email}
           isSubmitted={isSubmitted}
@@ -78,12 +92,11 @@ export default function ResetPasswordContainer() {
       </div>
 
       <div className="mt-5 relative">
-        <p className="text-[14px] mb-2">New Password</p>
         <InputField
           type={showPassword ? "text" : "password"}
           label="New Password"
           value={password}
-          onChange={(value) => setPassword(value)}
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
           error={errors.password}
           isSubmitted={isSubmitted}
@@ -102,12 +115,11 @@ export default function ResetPasswordContainer() {
       </div>
 
       <div className="mt-5 relative">
-        <p className="text-[14px] mb-2">Confirm Password</p>
         <InputField
           type={showConfirmPassword ? "text" : "password"}
           label="Confirm Password"
           value={confirmPassword}
-          onChange={(value) => setConfirmPassword(value)}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder="••••••••"
           error={errors.confirmPassword}
           isSubmitted={isSubmitted}
@@ -132,9 +144,10 @@ export default function ResetPasswordContainer() {
       <button
         className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer"
         onClick={handleResetPassword}
+        disabled={isLoading} // Disable button while loading
       >
         Reset Password
       </button>
     </div>
   );
-} 
+}

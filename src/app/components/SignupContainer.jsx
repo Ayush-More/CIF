@@ -46,7 +46,6 @@ export default function SignupContainer() {
 
         if (data.message === "Otp has been sent successfully") {
           setShowOtp(true);
-          console.log(data, 99999);
           updateForm({
             user_id: data.newUser._id,
           });

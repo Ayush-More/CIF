@@ -1,31 +1,3 @@
-// // context/AuthContext.tsx
-// "use client"
-// import { createContext, useContext, useState, ReactNode } from 'react';
-
-// type AuthContextType = {
-//     userData: object | null;
-//     setUserData: (token: object | null) => void;
-// };
-
-// const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// export const AuthProvider = ({ children }: { children: ReactNode }) => {
-//     const [userData, setUserData] = useState<object | null>(null);
-
-//     return (
-//         <AuthContext.Provider value={{ userData, setUserData }}>
-//             {children}
-//         </AuthContext.Provider>
-//     );
-// };
-
-// export const useAuth = () => {
-//     const context = useContext(AuthContext);
-//     if (context === undefined) {
-//         throw new Error('useAuth must be used within an AuthProvider');
-//     }
-//     return context;
-// };
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
@@ -42,6 +14,7 @@ interface UserData {
 interface AuthContextType {
     userData: UserData | null;
     setUserData: (user: UserData | null) => void;
+    setToken: (token: string) => void; // Function to set the token
     logout: () => void;
 }
 
@@ -71,13 +44,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     }, []);
 
+    const setToken = (token: string) => {
+        try {
+            setCookie(null, 'token', token, {
+                maxAge: 7 * 24 * 60 * 60, // 7 days
+                path: '/',
+            });
+
+            const payloadBase64 = token.split('.')[1];
+            const decodedPayload = atob(payloadBase64);
+            const user: UserData = JSON.parse(decodedPayload);
+            setUserData(user);
+        } catch (error) {
+            console.error('Error setting token:', error);
+            destroyCookie(null, 'token');
+            setUserData(null);
+        }
+    };
+
     const logout = () => {
         destroyCookie(null, 'token');
         setUserData(null);
     };
 
     return (
-        <AuthContext.Provider value={{ userData, setUserData, logout }}>
+        <AuthContext.Provider value={{ userData, setUserData, setToken, logout }}>
             {children}
         </AuthContext.Provider>
     );
@@ -90,4 +81,3 @@ export const useAuth = (): AuthContextType => {
     }
     return context;
 };
-

@@ -9,9 +9,11 @@ import InputField from "../components/InputField";
 import { validateLoginForm } from "../utils/validation";
 import { loginUser } from "../services/auth";
 import { ToastContainer, toast } from "react-toastify";
+import { useAuth } from "./../context/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginContainer() {
+  const {setToken} = useAuth();
   const router = useRouter();
   const { BASE_URL } = useContext(AppContext);
   const [formData, setFormData] = useState({
@@ -36,8 +38,9 @@ export default function LoginContainer() {
         email: formData.email,
         password: formData.password,
       });
+      setToken(result.token)
       setIsLoading(false); // Stop loader
-
+      
       if (result.success) {
         router.push("/");
       } else {

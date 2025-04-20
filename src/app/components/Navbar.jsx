@@ -3,12 +3,18 @@ import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { AppContext } from "../context/AppContext";
+import jwtDecode from "jwt-decode"; // Import if you want to decode the token
+import { useAuth } from "./../context/AuthContext";
 
 export default function Navbar() {
+  const { userData } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
   const { setIsOpen } = useContext(AppContext);
   const router = useRouter();
   const pathname = usePathname();
+
+  console.log(userData , 9999999)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,7 +31,40 @@ export default function Navbar() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [pathname]);
+
+  useEffect(() => {
+    // Check if the user is logged in by checking the token in cookies or local storage
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1]; // Extract token from cookies
+    console.log(token, 555555)
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token); // Decode the token if needed
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp > currentTime) {
+          setIsLoggedIn(true); // Token is valid, user is logged in
+        } else {
+          setIsLoggedIn(false); // Token is expired
+        }
+      } catch (error) {
+        console.error("Invalid token:", error);
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false); // No token found
+    }
   }, []);
+
+  const handleLogout = () => {
+    // Clear the token from cookies or local storage
+    document.cookie = "token=; Max-Age=0"; // Clear the token cookie
+    setIsLoggedIn(false);
+    router.push("/login"); // Redirect to login page
+  };
 
   return (
     <div
@@ -64,28 +103,41 @@ export default function Navbar() {
             <Link href={"/"} className="hover:text-[#EF5744]">
               Type of Cares
             </Link>
-            <Link href={"/"} className="hover:text-[#EF5744]">
+            {/* <Link href={"/"} className="hover:text-[#EF5744]">
               Blogs
-            </Link>
+            </Link> */}
           </ul>
         </div>
         <div className="hidden md:flex items-center gap-[26px]">
-          <span
-            onClick={() => {
-              router.push("/login");
-            }}
-            className="text-[14px] cursor-pointer hover:text-[#EF5744]"
-          >
-            Login
-          </span>
-          <button
-            onClick={() => {
-              router.push("/signup");
-            }}
-            className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
-          >
-            Join now
-          </button>
+          {userData ? (
+            <>
+              <button
+                onClick={handleLogout}
+                className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <span
+                onClick={() => {
+                  router.push("/login");
+                }}
+                className="text-[14px] cursor-pointer hover:text-[#EF5744]"
+              >
+                Login
+              </span>
+              <button
+                onClick={() => {
+                  router.push("/signup");
+                }}
+                className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
+              >
+                Join now
+              </button>
+            </>
+          )}
         </div>
         <div
           onClick={() => {

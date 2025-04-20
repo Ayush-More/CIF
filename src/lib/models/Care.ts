@@ -42,7 +42,7 @@ const CareSchema = new Schema<ICare>(
         languages: [
             {
                 id: Number,
-                name: { type: String },
+                language: { type: String },
                 proficiency: {
                     type: String,
                     enum: ['Beginner', 'Intermediate', 'Advanced'],
@@ -58,7 +58,6 @@ const CareSchema = new Schema<ICare>(
         },
         username: {
             type: String,
-            unique: true,
         },
         gender: {
             type: String,

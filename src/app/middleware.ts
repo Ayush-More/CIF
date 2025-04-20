@@ -33,7 +33,7 @@ import jwt from 'jsonwebtoken';
 export async function middleware(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
 
-    const protectedRoutes = ['/protected-route', '/dashboard']; // Add protected routes here
+    const protectedRoutes = ['/search']; // Add protected routes here
 
     // Check if the request is for a protected route
     if (protectedRoutes.some((route) => req.nextUrl.pathname.startsWith(route))) {
@@ -54,5 +54,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/protected-route/:path*', '/dashboard/:path*'], // Paths to apply middleware
+    matcher: ['/search'], // Paths to apply middleware
 };

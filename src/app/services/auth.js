@@ -97,24 +97,24 @@ export const forgotPassword = async (BASE_URL , email) => {
   return response.json();
 };
 
-export const resetPassword = async (BASE_URL , { email, password }) => {
+export const resetPassword = async (BASE_URL , email, password ) => {
   const response = await fetch(`${BASE_URL}/auth/reset-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify( email, password ),
   });
   return response.json();
 };
 
-export const verifyOtpOnEmail = async (BASE_URL, { email, otp }) => {
+export const verifyOtpOnEmail = async (BASE_URL,  userId, otp ) => {
   const response = await fetch(`${BASE_URL}/auth/verify-otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, otp }),
+    body: JSON.stringify( userId, otp ),
   });
   return response.json();
 };

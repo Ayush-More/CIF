@@ -14,7 +14,7 @@ export default function Create() {
 
   const handleNextClick = () => {
     if (selectedBanner === "caregiver") {
-      router.push("/search");
+      router.push("/login");
     } else if (selectedBanner === "carejob") {
       router.push("/care/enrollment/care-type");
     }
@@ -23,7 +23,7 @@ export default function Create() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-24">
+      <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-40">
         
         <div className="pb-10">
           <h1 className="font-[600] text-[28px] text-center">
@@ -57,7 +57,7 @@ export default function Create() {
                 }`}
               />
               <div className="text-center font-[500] text-[17px] mt-3">
-                I want a care job
+                I want a Care Job
               </div>
             </div>
           </div>

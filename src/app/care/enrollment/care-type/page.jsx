@@ -134,9 +134,9 @@ import Navbar from '../../../components/Navbar';
 import { useCareForm } from '../../../context/CareFormContext';
 
 export default function CareType() {
+  const { updateForm , formData} = useCareForm();
   const [isLoading, setIsLoading] = useState(false); // NEW STATE
-  const [selected, setSelected] = useState(null);
-  const { updateForm } = useCareForm();
+  const [selected, setSelected] = useState(formData.category);
   const router = useRouter();
 
     const data = [
@@ -178,7 +178,7 @@ export default function CareType() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl px-6 mx-auto pt-24 pb-10">
+      <div className="max-w-7xl px-6 mx-auto pt-30 pb-10">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
           <div className="loader"></div> {/* Spinner */}

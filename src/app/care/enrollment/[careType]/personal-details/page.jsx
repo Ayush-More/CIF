@@ -10,12 +10,12 @@ export default function PersonalData() {
   const [isLoading, setIsLoading] = useState(false); // NEW STATE
   const { BASE_URL } = useContext(AppContext);
   const { updateForm , formData } = useCareForm();
-  const [profilePic, setprofilePic] = useState(null);
-  const [username, setUsername] = useState("");
-  const [gender, setGender] = useState("");
-  const [dateOfBirth, setdateOfBirth] = useState("");
-  const [about, setabout] = useState("");
-  const [skills, setskills] = useState("");
+  const [profilePic, setprofilePic] = useState(formData.profilePic);
+  const [username, setUsername] = useState(formData.username);
+  const [gender, setGender] = useState(formData.gender);
+  const [dateOfBirth, setdateOfBirth] = useState(formData.dateOfBirth);
+  const [about, setabout] = useState(formData.about);
+  const [skills, setskills] = useState(formData.skills);
   const router = useRouter();
 
   // const handlePictureUpload = (e) => {
@@ -62,6 +62,7 @@ export default function PersonalData() {
   
       if (data.secure_url) {
         setprofilePic(data.secure_url); // Save the URL to state
+        updateForm({ profilePic: data.secure_url });
       } else {
         alert("Upload failed");
         console.error("Error:", data);
@@ -71,6 +72,16 @@ export default function PersonalData() {
       alert("Image upload failed. Try again.");
     }
   };
+  const handleBackClick = async () =>{
+     updateForm({
+      username: username,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      about: about,
+      skills: skills,
+      profilePic: profilePic,
+    });
+  }
   
 
   const handleNextClick = async () => {
@@ -85,19 +96,19 @@ export default function PersonalData() {
         skills,
         profilePic,
       };
-      setIsLoading(false); // Stop loader on error
-      updateForm(updatedData); // still update context for global state
+      updateForm(updatedData); // Save to context
+      
       try {
-        console.log(formData , 7777777);
         const data = await createCare(BASE_URL, updatedData);
 
         if (data.success) {
-          router.push("/");
+          router.push("/login");
         }
       }  catch (err) {
-        setIsLoading(false); // Stop loader on error
         alert("Something went wrong while submitting the form.");
         console.error(err);
+      }finally {
+        setIsLoading(false); // Stop loader
       }
     } else {
       setIsLoading(false); // Stop loader
@@ -232,7 +243,7 @@ export default function PersonalData() {
             <div className="flex justify-center mt-8 gap-4">
               <button
                 className="w-20 rounded-full px-[22px] py-[9px] text-[13px] bg-[#e3e3e3] text-[#000] cursor-pointer"
-                onClick={() => router.back()}
+                onClick={() => {handleBackClick(); router.back()}}
               >
                 Back
               </button>
