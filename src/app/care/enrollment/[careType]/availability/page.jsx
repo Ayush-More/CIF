@@ -1,25 +1,27 @@
-
-
 "use client";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
-import { useCareForm } from "../../../../context/CareFormContext"; // ⬅️ import context
+import { useCareForm } from "../../../../context/CareFormContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Availability() {
-  const [isLoading, setIsLoading] = useState(false); // NEW STATE
-  const { updateForm , formData } = useCareForm(); // ⬅️ access context
-  const [selectedDays, setSelectedDays] = useState(formData.workingDays);
-  const [selectedTiming, setSelectedTiming] = useState(formData.timings);
+  const { updateForm, formData } = useCareForm();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Initialize state with formData or defaults
+  const [selectedDays, setSelectedDays] = useState(formData.workingDays || []);
+  const [selectedTiming, setSelectedTiming] = useState(formData.timings || "");
   const [languages, setLanguages] = useState(
     formData.languages && formData.languages.length > 0
       ? formData.languages
       : [{ id: 1, language: "", proficiency: "" }]
   );
-  const [hourlyRate, setHourlyRate] = useState(formData.hourlyRate);
+  const [hourlyRate, setHourlyRate] = useState(formData.hourlyRate || 10);
+
   const router = useRouter();
   const pathname = usePathname();
-
   const careType = pathname.split("/")[3];
 
   const handleDayClick = (day) => {
@@ -29,10 +31,24 @@ export default function Availability() {
   };
 
   const handleAddLanguage = () => {
+    if (languages.length >= 5) {
+      toast.warning('Maximum 5 languages can be added', {
+        position: "top-right",
+        autoClose: 3000
+      });
+      return;
+    }
     setLanguages([...languages, { id: languages.length + 1, language: "", proficiency: "" }]);
   };
 
   const handleRemoveLanguage = (id) => {
+    if (languages.length === 1) {
+      toast.warning('At least one language is required', {
+        position: "top-right",
+        autoClose: 3000
+      });
+      return;
+    }
     setLanguages(languages.filter((language) => language.id !== id));
   };
 
@@ -45,61 +61,113 @@ export default function Availability() {
   };
 
   const handleHourlyRateChange = (e) => {
-    setHourlyRate(e.target.value);
+    const value = parseInt(e.target.value);
+    setHourlyRate(value);
   };
+
+  const validateForm = () => {
+    const errors = [];
+
+    // Validate working days
+    if (selectedDays.length === 0) {
+      errors.push("Please select at least one working day");
+    }
+
+    // Validate timing
+    if (!selectedTiming) {
+      errors.push("Please select your preferred timing");
+    }
+
+    // Validate languages
+    const hasEmptyLanguage = languages.some(
+      lang => !lang.language || !lang.proficiency
+    );
+    if (hasEmptyLanguage) {
+      errors.push("Please complete all language selections with both language and proficiency");
+    }
+
+    // Validate hourly rate
+    if (!hourlyRate || hourlyRate < 10) {
+      errors.push("Hourly rate must be at least $10");
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleBackClick = async () => {
-    // Save all form data before navigating back
     const formDataToUpdate = {
       workingDays: selectedDays,
       timings: selectedTiming,
-      languages,
+      languages: languages.filter(lang => lang.language && lang.proficiency), // Only save complete language entries
       hourlyRate: Number(hourlyRate),
     };
 
     updateForm(formDataToUpdate);
+    router.back();
   };
 
   const handleNextClick = () => {
-    setIsLoading(true);
-    const validLanguages = languages.every(
-      (lang) => lang.language && lang.proficiency
-    );
-
-    // Basic validation
-    if (!selectedDays.length || !selectedTiming || !validLanguages) {
-      setIsLoading(false);
-      alert("Please complete all required fields before proceeding.");
+    if (!validateForm()) {
       return;
     }
 
-    // Save form data
-    const formDataToUpdate = {
-      workingDays: selectedDays,
-      timings: selectedTiming,
-      languages,
-      hourlyRate: Number(hourlyRate),
-    };
+    setIsLoading(true);
 
-    updateForm(formDataToUpdate);
-    setIsLoading(false);
-    router.push(`/care/enrollment/${formData.category}/additional-details`);
+    try {
+      const formDataToUpdate = {
+        workingDays: selectedDays,
+        timings: selectedTiming,
+        languages: languages.filter(lang => lang.language && lang.proficiency),
+        hourlyRate: Number(hourlyRate),
+      };
+
+      updateForm(formDataToUpdate);
+      toast.success('Availability details saved successfully!', {
+        position: "top-right",
+        autoClose: 2000
+      });
+      router.push(`/care/enrollment/${formData.category}/additional-details`);
+    } catch (error) {
+      toast.error('Failed to save availability details', {
+        position: "top-right",
+        autoClose: 3000
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
       <Navbar />
       <div className="max-w-7xl px-6 mx-auto md:px-10 lg:px-14 xl:px-20 pt-30 pb-10">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
-          <div className="loader"></div> {/* Spinner */}
-        </div>
-      )}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#ffffffcc] z-10">
+            <div className="loader"></div>
+          </div>
+        )}
         <div className="w-[55%] mx-auto">
           <h1 className="font-[600] text-[28px] text-center">
             Choose your preferred frequency and timing
           </h1>
-          {/* Progress Steps */}
-          <div className="flex justify-center">
+          
+          {/* Progress Steps section remains the same */}
+           {/* Progress Steps */}
+           <div className="flex justify-center">
             <div className="flex gap-5 items-center mt-8">
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/correct.svg" alt="" className="h-7" />
@@ -128,11 +196,13 @@ export default function Availability() {
             </div>
           </div>
 
+
           <div className="mt-10 flex flex-col gap-8">
             {/* Days Selection */}
             <div>
-              <p className="text-[15px] font-[500]">
+              <p className="text-[15px] font-[500] flex items-center">
                 How often do you need to work?
+                <span className="text-red-500 ml-1">*</span>
               </p>
               <div className="flex gap-2 mt-2 flex-wrap">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
@@ -151,11 +221,17 @@ export default function Availability() {
                   )
                 )}
               </div>
+              <p className="text-[11px] text-gray-500 mt-1">
+                Selected: {selectedDays.length ? selectedDays.join(", ") : "None"}
+              </p>
             </div>
 
             {/* Timing Selection */}
             <div>
-              <p className="text-[15px] font-[500]">Choose Your Timing</p>
+              <p className="text-[15px] font-[500] flex items-center">
+                Choose Your Timing
+                <span className="text-red-500 ml-1">*</span>
+              </p>
               <div className="flex gap-2 mt-2">
                 {["Daily", "Weekly", "Monthly"].map((timing, i) => (
                   <div
@@ -175,7 +251,11 @@ export default function Availability() {
 
             {/* Language Selection */}
             <div>
-              <p className="text-[15px] font-[500]">Language</p>
+              <p className="text-[15px] font-[500] flex items-center">
+                Language
+                <span className="text-red-500 ml-1">*</span>
+                <span className="text-[11px] text-gray-500 ml-2">(Max 5 languages)</span>
+              </p>
               <div className="mt-2">
                 {languages.map((language) => (
                   <div
@@ -206,30 +286,35 @@ export default function Availability() {
                       <option value="">Select Proficiency</option>
                       <option value="Beginner">Beginner</option>
                       <option value="Intermediate">Intermediate</option>
-                      <option value="Advance">Advance</option>
+                      <option value="Advanced">Advanced</option>
                     </select>
                     {languages.length > 1 && (
-                      <div
+                      <button
                         className="text-[#EF5744] font-[500] text-[14px] cursor-pointer"
                         onClick={() => handleRemoveLanguage(language.id)}
                       >
                         Remove
-                      </div>
+                      </button>
                     )}
                   </div>
                 ))}
-                <div
-                  className="text-[#EF5744] font-[500] text-[14px] mt-2 cursor-pointer"
-                  onClick={handleAddLanguage}
-                >
-                  + Add Another Language
-                </div>
+                {languages.length < 5 && (
+                  <button
+                    className="text-[#EF5744] font-[500] text-[14px] mt-2 cursor-pointer"
+                    onClick={handleAddLanguage}
+                  >
+                    + Add Another Language
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Hourly Rate Slider */}
             <div>
-              <p className="text-[15px] font-[500]">Select Your Hourly Rate</p>
+              <p className="text-[15px] font-[500] flex items-center">
+                Select Your Hourly Rate
+                <span className="text-red-500 ml-1">*</span>
+              </p>
               <div className="mt-4">
                 <p className="text-[20px] font-[600]">${hourlyRate}</p>
                 <div className="mt-2 relative w-[80%] slider-container">
@@ -243,28 +328,32 @@ export default function Availability() {
                     className="w-full appearance-none cursor-pointer custom-slider"
                   />
                 </div>
+                
               </div>
-            </div>
             </div>
           </div>
 
-          {/* Navigation Buttons */}
           <div className="flex justify-center mt-8 gap-4">
             <button
               className="w-20 rounded-full px-[22px] py-[9px] text-[13px] bg-[#e3e3e3] text-[#000] cursor-pointer"
-              onClick={() =>{handleBackClick();  router.back()}}
+              onClick={handleBackClick}
+              disabled={isLoading}
             >
               Back
             </button>
             <button
               className="w-20 rounded-full px-[22px] py-[9px] text-[13px] bg-[#EF5744] text-[#ffffff] cursor-pointer"
               onClick={handleNextClick}
+              disabled={isLoading}
             >
-              Next
+              {isLoading ? 'Saving...' : 'Next'}
             </button>
           </div>
         </div>
-         {/* Custom CSS for the slider */}
+      </div>
+      <ToastContainer />
+      
+      {/* Existing styles remain the same */}
       <style jsx global>{`
         /* Custom slider container */
         .slider-container {
@@ -354,9 +443,6 @@ export default function Availability() {
           --value: ${hourlyRate};
         }
       `}</style>
-
-     
     </>
   );
 }
-

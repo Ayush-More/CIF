@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
 import { useCareForm } from "../../../../context/CareFormContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const MIN_WORDS = 50;
 
 export default function AdditionalDetails() {
   const { updateForm, formData } = useCareForm();
@@ -25,10 +29,6 @@ export default function AdditionalDetails() {
   const [jobTiming, setJobTiming] = useState(formData.jobTiming || "");
   const [careFor, setCareFor] = useState(formData.careFor || 0);
 
-  const handleIncrement = () => setCareFor((prev) => prev + 1);
-  const handleDecrement = () => setCareFor((prev) => Math.max(prev - 1, 0));
-
-  
   // Meal service specific fields
   const [travelDistance, setTravelDistance] = useState(formData.travelDistance || "");
   const [serviceType, setServiceType] = useState(formData.serviceType || "");
@@ -39,6 +39,11 @@ export default function AdditionalDetails() {
   const router = useRouter();
   const pathname = usePathname();
   const careType = pathname.split("/")[3];
+
+  // Helper function to count words
+  const countWords = (text) => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
 
   // Function to fetch location from zipcode using the postal pincode API
   const fetchLocationFromZipCode = async (zipCode) => {
@@ -53,27 +58,104 @@ export default function AdditionalDetails() {
         if (data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
           const postOffice = data[0].PostOffice[0];
           setLocation(`${postOffice.District}, ${postOffice.State}`);
+          toast.success('Location found successfully!', {
+            position: "top-right",
+            autoClose: 2000
+          });
         } else {
           setZipCodeError("Invalid PIN code or no location found");
           setLocation("");
+          toast.error('Invalid PIN code or no location found', {
+            position: "top-right",
+            autoClose: 3000
+          });
         }
       } catch (error) {
         console.error("Error fetching location data:", error);
         setZipCodeError("Failed to fetch location. Please check your internet connection and try again.");
         setLocation("");
+        toast.error('Failed to fetch location. Please try again.', {
+          position: "top-right",
+          autoClose: 3000
+        });
       } finally {
         setIsLoading(false);
       }
-    } else if (zipCode.length > 0) {
-      setLocation("");
     }
   };
+
+  const handleIncrement = () => setCareFor((prev) => prev + 1);
+  const handleDecrement = () => setCareFor((prev) => Math.max(prev - 1, 0));
 
   useEffect(() => {
     if (zipCode.length === 6) {
       fetchLocationFromZipCode(zipCode);
     }
   }, [zipCode]);
+
+  const validateForm = () => {
+    const errors = [];
+
+    // Common fields validation
+    if (!zipCode || zipCode.length !== 6) {
+      errors.push("Please enter a valid 6-digit ZIP code");
+    }
+
+    if (!location) {
+      errors.push("Location is required");
+    }
+
+    const experienceWords = countWords(experience);
+    if (!experience || experienceWords < MIN_WORDS) {
+      errors.push(`Experience must contain at least ${MIN_WORDS} words (currently: ${experienceWords} words)`);
+    }
+
+    // Care type specific validation
+    if (careType === "tutoring") {
+      if (!mode) {
+        errors.push("Please select a tutoring mode");
+      }
+    } else if (careType === "childcare") {
+      if (!ageBand) {
+        errors.push("Please select an age band");
+      }
+      if (!jobTiming) {
+        errors.push("Please select when you need the job");
+      }
+      if (careFor === 0) {
+        errors.push("Please specify how many children you can care for");
+      }
+    } else if (careType === "mealservice") {
+      if (!travelDistance) {
+        errors.push("Please select travel distance");
+      }
+      if (!serviceType) {
+        errors.push("Please select service type");
+      }
+      if (!mealPrice) {
+        errors.push("Please select meal price range");
+      }
+      if (mealTypes.length === 0) {
+        errors.push("Please select at least one meal type");
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const handleMealTypeToggle = (type) => {
     setMealTypes(prev => 
@@ -84,88 +166,65 @@ export default function AdditionalDetails() {
   };
 
   const handleBackClick = () => {
-    // Save form data before navigating back
-    const formDataToUpdate = {
+    updateForm({
       zipCode,
       location,
-      experience
-    };
-
-    // Add care type specific data
-    if (careType === "tutoring") {
-      formDataToUpdate.mode = mode;
-    } else if (careType === "childcare") {
-      formDataToUpdate.schoolDrop = schoolDrop;
-      formDataToUpdate.smoking = smoking;
-      formDataToUpdate.overnightCare = overnightCare;
-      formDataToUpdate.ageBand = ageBand;
-      formDataToUpdate.jobTiming = jobTiming;
-      formDataToUpdate.careFor = careFor;
-    } else if (careType === "mealservice") {
-      formDataToUpdate.travelDistance = travelDistance;
-      formDataToUpdate.serviceType = serviceType;
-      formDataToUpdate.mealPrice = mealPrice;
-      formDataToUpdate.offerSubscription = offerSubscription;
-      formDataToUpdate.mealTypes = mealTypes;
-    }
-
-    updateForm(formDataToUpdate);
+      experience,
+      ...(careType === "tutoring" && { mode }),
+      ...(careType === "childcare" && {
+        schoolDrop,
+        smoking,
+        overnightCare,
+        ageBand,
+        jobTiming,
+        careFor
+      }),
+      ...(careType === "mealservice" && {
+        travelDistance,
+        serviceType,
+        mealPrice,
+        offerSubscription,
+        mealTypes
+      })
+    });
     router.back();
   };
 
   const handleNextClick = () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     
-    // Basic validation for common fields
-    if (!zipCode || !experience || !location) {
-      setIsLoading(false);
-      alert("Please complete all required fields before proceeding.");
-      return;
-    }
-
-    // Care type specific validation
-    let isValid = true;
-    if (careType === "tutoring" && !mode) {
-      isValid = false;
-    } else if (careType === "childcare" && (!ageBand || !jobTiming || careFor === 0)) {
-      isValid = false;
-    } else if (careType === "mealservice" && (!travelDistance || !serviceType || !mealPrice || mealTypes.length === 0)) {
-      isValid = false;
-    }
-
-    if (!isValid) {
-      setIsLoading(false);
-      alert("Please complete all required fields for this service type.");
-      return;
-    }
-
-    // Save form data
     const formDataToUpdate = {
       zipCode,
       location,
-      experience
+      experience,
+      ...(careType === "tutoring" && { mode }),
+      ...(careType === "childcare" && {
+        schoolDrop,
+        smoking,
+        overnightCare,
+        ageBand,
+        jobTiming,
+        careFor
+      }),
+      ...(careType === "mealservice" && {
+        travelDistance,
+        serviceType,
+        mealPrice,
+        offerSubscription,
+        mealTypes
+      })
     };
-
-    // Add care type specific data
-    if (careType === "tutoring") {
-      formDataToUpdate.mode = mode;
-    } else if (careType === "childcare") {
-      formDataToUpdate.schoolDrop = schoolDrop;
-      formDataToUpdate.smoking = smoking;
-      formDataToUpdate.overnightCare = overnightCare;
-      formDataToUpdate.ageBand = ageBand;
-      formDataToUpdate.jobTiming = jobTiming;
-      formDataToUpdate.careFor = careFor;
-    } else if (careType === "mealservice") {
-      formDataToUpdate.travelDistance = travelDistance;
-      formDataToUpdate.serviceType = serviceType;
-      formDataToUpdate.mealPrice = mealPrice;
-      formDataToUpdate.offerSubscription = offerSubscription;
-      formDataToUpdate.mealTypes = mealTypes;
-    }
 
     updateForm(formDataToUpdate);
     setIsLoading(false);
+    toast.success('Details saved successfully!', {
+      position: "top-right",
+      autoClose: 2000
+    });
     router.push(`/care/enrollment/${formData.category}/personal-details`);
   };
 
@@ -183,8 +242,9 @@ export default function AdditionalDetails() {
             Additional Details
           </h1>
           
-          {/* Progress Steps */}
-          <div className="flex justify-center">
+          {/* Progress Steps section remains the same */}
+            {/* Progress Steps */}
+            <div className="flex justify-center">
             <div className="flex gap-5 items-center mt-8">
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/correct.svg" alt="" className="h-7" />
@@ -221,9 +281,9 @@ export default function AdditionalDetails() {
                 <input
                   type="text"
                   className="border text-[13px] px-4 py-2 rounded-lg w-full"
-                  placeholder="Enter zip code"
+                  placeholder="Enter 6-digit zip code"
                   value={zipCode}
-                  onChange={(e) => setZipCode(e.target.value)}
+                  onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
                 />
                 {zipCodeError && (
@@ -242,15 +302,18 @@ export default function AdditionalDetails() {
               </div>
             </div>
 
-            <div>
+            <div className="relative">
               <p className="text-[15px] font-[500]">Experience</p>
               <textarea
                 className="border text-[13px] px-4 py-2 rounded-lg w-full mt-2"
-                placeholder="Describe your experience"
+                placeholder={`Describe your experience (minimum ${MIN_WORDS} words required)`}
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
-                rows={3}
+                rows={5}
               />
+              <div className="absolute bottom-2 right-2 text-[11px] text-gray-500">
+                {countWords(experience)} words / {MIN_WORDS} required
+              </div>
             </div>
 
             {/* Conditional Fields Based on Care Type */}
@@ -471,41 +534,26 @@ export default function AdditionalDetails() {
               </>
             )}
           </div>
+          </div>
 
-          {/* Navigation Buttons */}
           <div className="flex justify-center mt-8 gap-4">
             <button
               className="w-20 rounded-full px-[22px] py-[9px] text-[13px] bg-[#e3e3e3] text-[#000] cursor-pointer"
               onClick={handleBackClick}
+              disabled={isLoading}
             >
               Back
             </button>
             <button
               className="w-20 rounded-full px-[22px] py-[9px] text-[13px] bg-[#EF5744] text-[#ffffff] cursor-pointer"
               onClick={handleNextClick}
+              disabled={isLoading}
             >
-              Next
+              {isLoading ? 'Saving...' : 'Next'}
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Custom CSS for loader */}
-      <style jsx global>{`
-        .loader {
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #ef5744;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+      <ToastContainer />
     </>
   );
 }
