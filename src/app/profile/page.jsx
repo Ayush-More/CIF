@@ -180,8 +180,27 @@ export default function Profile() {
             </div>
           </div>
         ) : (
-          <div className="bg-[#F2F3F4] md:mt-7 rounded-md flex flex-col gap-6 pt-8 pb-20 md:px-10 px-6 min-h-[60vh] justify-center items-center">
-            <p>Profile not found or could not be loaded.</p>
+          // <div className="bg-[#F2F3F4] md:mt-7 rounded-md flex flex-col gap-6 pt-8 pb-20 md:px-10 px-6 min-h-[60vh] justify-center items-center">
+          //   <p>Profile not found or could not be loaded.</p>
+          // </div>
+          <div className="flex h-full flex-col items-center justify-center space-y-3 border-none bg-transparent p-4">
+            <Image
+              src={"/assets/img/man.png"}
+              width={150}
+              height={150}
+              priority
+            />
+            <h1 className="text-center text-2xl font-bold md:text-start md:text-4xl">
+              Create a job seeker profile
+            </h1>
+            <Button
+              className="ml-4 bg-[#EF5844] px-6 py-2 text-lg text-white"
+              onClick={() => {
+                router.push("/care/enrollment/care-type");
+              }}
+            >
+              Create Profile
+            </Button>
           </div>
         )}
       </div>

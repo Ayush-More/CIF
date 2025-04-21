@@ -19,10 +19,8 @@ console.log(userId , 88888)
     const result = await listCareProfile(userId);
     setCardData(result)
   }
-  console.log(cardData , 22222)
   useEffect(()=>{
     handleList()
-    console.log(cardData , 22222)
   },[])
   return (
     <>
