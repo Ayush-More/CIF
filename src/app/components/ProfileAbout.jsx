@@ -1,67 +1,89 @@
-export default function ProfileAbout() {
+export default function ProfileAbout({ data }) {
+  if (!data) return null;
+
+  // Function to split the about text into paragraphs
+  const formatAboutText = (text) => {
+    if (!text) return [];
+    
+    // Split by periods followed by a space, and ensure each part ends with a period
+    const paragraphs = text.split(/\.(?=\s|$)/).filter(p => p.trim().length > 0);
+    return paragraphs.map(p => p.trim() + (p.endsWith('.') ? '' : '.'));
+  };
+
+  const aboutParagraphs = formatAboutText(data.about);
+
+  // Generate section titles based on category
+  const getSectionTitles = () => {
+    switch (data.category) {
+      case 'tutoring':
+        return ['Teaching Approach', 'Specializations', 'Student Success'];
+      case 'childcare':
+        return ['Childcare Philosophy', 'Activities & Learning', 'Safety & Care'];
+      case 'mentalphysical':
+        return ['Therapeutic Approach', 'Specializations', 'Client Experience'];
+      case 'mealservice':
+        return ['Culinary Style', 'Special Diets', 'Service Options'];
+      default:
+        return ['Experience', 'Specializations', 'Service Approach'];
+    }
+  };
+
+  const sectionTitles = getSectionTitles();
+
   return (
     <div className="w-full mt-8">
       <h1 className="text-[#101828] text-[22px] font-[600] mb-2">About</h1>
+      
+      {/* Main about section */}
       <div className="text-[#475467] text-[13px]">
-        Sukoon Health treats acute psychiatric needs, addiction, mental health
-        conditions, personality disorders, and more across all ages. They use
-        personalized and intensive care to provide a comprehensive treatment
-        experience in a residential, outpatient, or at-home setting. Their
-        experienced staff includes psychiatrists, psychologists, medical
-        doctors, counsellors, art therapists, and a 1:1 nurse-to-client ratio.
-        Sukoon Health has special treatment tracks for women, older adults, and
-        adolescents.
+        {aboutParagraphs[0] || data.about}
       </div>
 
-      <div className="mt-5">
-        <span className="text-[#475467] font-[600] text-[16px]">
-          Intensive And Personalized Care
-        </span>
-        <div className="text-[#475467] text-[13px]">
-          Sukoon Health’s facility includes 3 intensive care units for acute
-          psychiatric needs, residential living and treatment spaces, and
-          nursing stations on their 6 floors. They address mental health
-          conditions using personalized and evidence-based care. Sukoon Health
-          treats anxiety, depression, phobias, obsessive compulsive disorder
-          (OCD), bipolar disorder, psychosis, and schizophrenia. They also treat
-          personality disorders, including borderline personality disorder (BPD)
-          and narcissism.
+      {/* Additional sections - dynamically created based on available content */}
+      {aboutParagraphs.length > 1 && (
+        <div className="mt-5">
+          <span className="text-[#475467] font-[600] text-[16px]">
+            {sectionTitles[0]}
+          </span>
+          <div className="text-[#475467] text-[13px]">
+            {aboutParagraphs[1]}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="mt-5">
-        <span className="text-[#475467] font-[600] text-[16px]">
-          Individualized Addiction Treatment
-        </span>
-        <div className="text-[#475467] text-[13px]">
-          Sukoon Health provides detox, medication-assisted treatment, and
-          relapse prevention strategies to treat addiction. They also treat
-          behavioral addictions, including gambling, porn, sex addiction, and
-          phone addiction. Clients meet 1:1 with their therapist and in weekly
-          group therapy to navigate the causes of addiction and create relapse
-          prevention strategies. Clients can attend addiction, mental health,
-          and psychiatric treatment in a residential or outpatient program at
-          Sukoon Health. They additionally offer at-home services that bring
-          treatment to each client.
+      {aboutParagraphs.length > 2 && (
+        <div className="mt-5">
+          <span className="text-[#475467] font-[600] text-[16px]">
+            {sectionTitles[1]}
+          </span>
+          <div className="text-[#475467] text-[13px]">
+            {aboutParagraphs[2]}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="mt-5">
-        <span className="text-[#475467] font-[600] text-[16px]">
-          Specialized Treatment Tracks
-        </span>
-        <div className="text-[#475467] text-[13px]">
-          Sukoon Health provides behavioral, mental health, and learning
-          disability treatment for adolescents. They offer a women-only
-          treatment program with only women on staff. Sukoon Health also
-          provides geriatric psychiatric care for older adults. They provide
-          adjunct therapies for all ages, including rTMS (repeated transcranial
-          magnetic stimulation), art therapy with on-staff art therapists, yoga,
-          and exercise with an on-site fitness studio. Sukoon Health
-          additionally helps international clients with their visa process and
-          airport transfers.
+      {aboutParagraphs.length > 3 && (
+        <div className="mt-5">
+          <span className="text-[#475467] font-[600] text-[16px]">
+            {sectionTitles[2]}
+          </span>
+          <div className="text-[#475467] text-[13px]">
+            {aboutParagraphs.slice(3).join(' ')}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* If we don't have enough paragraphs, display skills in a separate section */}
+      {aboutParagraphs.length <= 3 && data.skills && (
+        <div className="mt-5">
+          <span className="text-[#475467] font-[600] text-[16px]">
+            Skills & Specializations
+          </span>
+          <div className="text-[#475467] text-[13px]">
+            {data.skills}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

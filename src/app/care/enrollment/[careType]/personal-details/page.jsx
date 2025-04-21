@@ -99,6 +99,7 @@ export default function PersonalData() {
       updateForm(updatedData); // Save to context
       
       try {
+        console.log(updatedData , "updatedData")
         const data = await createCare(BASE_URL, updatedData);
 
         if (data.success) {
@@ -142,7 +143,7 @@ export default function PersonalData() {
               <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/correct.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Availability</div>
+                <div className="text-[11px]">Availability and details</div>
               </div>
               <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
               <div className="flex flex-col items-center gap-2">
