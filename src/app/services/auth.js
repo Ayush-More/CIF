@@ -65,25 +65,48 @@ export const listCareProfile = async (user_id) => {
 };
 
 export const createReview = async (data) => {
-  console.log("Called")
-  const response = await fetch(`/api/reviews/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  return response.json();
+  try {
+    const response = await fetch('/api/reviews/create', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to create review');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Create review error:', error);
+    throw error;
+  }
 };
 
 export const listReview = async (careId) => {
-  const response = await fetch(`/api/reviews/list?care_id=${careId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response.json();
+  try {
+    const response = await fetch(`/api/reviews/list?care_id=${careId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to fetch reviews');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('List reviews error:', error);
+    throw error;
+  }
 };
 
 export const forgotPassword = async (BASE_URL , email) => {

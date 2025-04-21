@@ -12,7 +12,10 @@ export default function CareCard({ data, handleCardClick }) {
         <div className="flex justify-between md:px-[4px]">
           <div className="flex items-center gap-[5px]">
             <img src="/Icons/star.svg" alt="" className="h-[20px]" />
-            <span className="font-[600] text-[18px]">{data?.rating} (100)</span>
+            {/* <span className="font-[600] text-[18px]">{data?.rating} (100)</span> */}
+            <span className="font-[600] text-[18px]">
+            {data?.rating?.toFixed(1) || "0.0"} ({data?.total_reviews || 0})
+          </span>
           </div>
           <div className="flex items-center gap-[5px]">
             <img src="/Icons/location.svg" alt="" className="h-[20px]" />

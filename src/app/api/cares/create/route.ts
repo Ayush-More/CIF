@@ -10,54 +10,38 @@ export async function POST(req: NextRequest) {
         // Connect to the database
         await connectToDatabase();
 
-        // Core required fields validation
-        const requiredFields = [
-            "user_id",
-            "category",
-            "workingDays",
-            "timings",
-            "languages",
-            "hourlyRate",
-            "username",
-            "gender",
-            "dateOfBirth",
-            "about",
-            "skills",
-        ];
+        // No required fields as per the new model
+        // Just validate the data types if they are provided
 
-        const missingFields = requiredFields.filter((field) => !data[field]);
-
-        if (missingFields.length > 0) {
-            return NextResponse.json(
-                {
-                    message: `Validation failed: Missing required fields - ${missingFields.join(", ")}`,
-                    success: false,
-                },
-                { status: 400 }
-            );
-        }
-
-        // Validate enum values and data types
+        // Validate enum values and data types if they exist
         const validations = [
             {
-                condition: !["childcare", "mentalphysical", "mealservice", "tutoring"].includes(data.category),
+                condition: data.category && !["childcare", "mentalphysical", "mealservice", "tutoring"].includes(data.category),
                 message: "Invalid category value"
             },
             {
-                condition: !["Daily", "Weekly", "Monthly"].includes(data.timings),
+                condition: data.timings && !["Daily", "Weekly", "Monthly"].includes(data.timings),
                 message: "Invalid timings value"
             },
             {
-                condition: !Array.isArray(data.languages) || data.languages.length === 0,
-                message: "Languages must be a non-empty array"
+                condition: data.workingDays && (!Array.isArray(data.workingDays)),
+                message: "Working days must be an array"
             },
             {
-                condition: !Array.isArray(data.workingDays) || data.workingDays.length === 0,
-                message: "Working days must be a non-empty array"
+                condition: data.languages && (!Array.isArray(data.languages)),
+                message: "Languages must be an array"
             },
             {
-                condition: typeof data.hourlyRate !== "number" || data.hourlyRate <= 0,
-                message: "Hourly rate must be a positive number"
+                condition: data.hourlyRate && (typeof data.hourlyRate !== "number" || data.hourlyRate < 0),
+                message: "Hourly rate must be a non-negative number"
+            },
+            {
+                condition: data.careFor && (typeof data.careFor !== "number" || data.careFor < 0),
+                message: "Care for must be a non-negative number"
+            },
+            {
+                condition: data.mealTypes && !Array.isArray(data.mealTypes),
+                message: "Meal types must be an array"
             }
         ];
 
@@ -70,34 +54,23 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // Optional field validations
-        if (data.profileViews && typeof data.profileViews !== 'number') {
-            data.profileViews = 0; // Set default if invalid
-        }
-
-        if (data.ratings && !Array.isArray(data.ratings)) {
-            data.ratings = []; // Set default if invalid
-        }
-
-        // Validate array fields if they exist
-        const arrayFields = ['availableLocation', 'availableWorkDays', 'ageGroups', 'languagesSpoken'];
-        arrayFields.forEach(field => {
-            if (data[field] && !Array.isArray(data[field])) {
-                data[field] = []; // Set default if invalid
-            }
-        });
-
-        // Set default values for optional fields if not provided
+        // Set default values
         const defaultValues = {
-            profilePic: "https://cdn-icons-png.flaticon.com/512/1808/1808546.png",
-            repost: new Date(),
-            profileViews: 0
+            location: "Mumbai",
+            ratings: 4.5,
+            profilePic: "https://cdn-icons-png.flaticon.com/512/1808/1808546.png"
         };
 
         // Merge default values with provided data
         const careData = {
             ...defaultValues,
-            ...data
+            ...data,
+            // Convert specific fields to their proper types
+            dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+            schoolDrop: data.schoolDrop ? Boolean(data.schoolDrop) : undefined,
+            smoking: data.smoking ? Boolean(data.smoking) : undefined,
+            overnightCare: data.overnightCare ? Boolean(data.overnightCare) : undefined,
+            offerSubscription: data.offerSubscription ? Boolean(data.offerSubscription) : undefined
         };
 
         // Create the Care document
@@ -112,27 +85,13 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Care creation error:', error);
-
-        // Handle mongoose validation errors specifically
-        if (error.name === 'ValidationError') {
-            return NextResponse.json(
-                {
-                    message: "Validation failed",
-                    errors: Object.values(error.errors),
-                    success: false,
-                },
-                { status: 400 }
-            );
-        }
-
-        // Handle other errors
         return NextResponse.json(
             {
                 message: "Failed to create care profile",
-                error: error.message || "Internal server error",
-                success: false,
+                error: error.message,
+                success: false
             },
             { status: 500 }
         );

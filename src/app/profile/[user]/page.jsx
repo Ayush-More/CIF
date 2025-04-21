@@ -8,7 +8,25 @@ import ProfileCard from "../../components/ProfileCard";
 import ProfileImages from "../../components/ProfileImages";
 import ProfileOthers from "../../components/ProfileOthers";
 import ProfileReview from "../../components/ProfileReview";
+import ReviewSection from "../../components/ReviewSection";
 import { listCareProfile } from "./../../services/auth";
+
+
+// async function getCareData(id) {
+//   try {
+//       await connectToDatabase();
+//       const care = await Care.findById(id);
+      
+//       if (!care) {
+//           return null;
+//       }
+      
+//       return JSON.parse(JSON.stringify(care));
+//   } catch (error) {
+//       console.error('Error fetching care data:', error);
+//       return null;
+//   }
+// }
 
 export default function Profile() {
   const [cardData, setCardData] = useState(null);
@@ -53,7 +71,7 @@ export default function Profile() {
           <div className="md:w-[68%]">
             <ProfileCard data={cardData?.data} />
             <ProfileAbout data={cardData?.data} />
-            <ProfileImages data={cardData?.data} />
+            {/* <ProfileImages data={cardData?.data} /> */}
             <ProfileOthers data={cardData?.data} />
           </div>
           <div className="md:w-[25%] mt-8 md:mt-0">
@@ -72,6 +90,12 @@ export default function Profile() {
           </div>
         </div>
         <ProfileReview careId={cardData?.data?._id} />
+        {/* <ReviewSection
+                careId={userId}
+                initialReviews={care?.reviews || []}
+                initialAverageRating={care.averageRating || 0}
+                initialTotalReviews={care.totalReviews || 0}
+            /> */}
       </div>
       <Footer />
     </>

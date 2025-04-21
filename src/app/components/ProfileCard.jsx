@@ -1,3 +1,4 @@
+
 export default function ProfileCard({ data }) {
   if (!data) return null;
 

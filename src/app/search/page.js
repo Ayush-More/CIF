@@ -14,8 +14,8 @@ export default function Search() {
 
   const handleList = async () => {
     const result = await listCare();
-    setCardData(result.data); // Assuming the API returns `data` key
-    setFilteredData(result.data); // Initialize filteredData
+    setCardData(result.data.cares); // Assuming the API returns `data` key
+    setFilteredData(result.data.cares); // Initialize filteredData
   };
 
   console.log(cardData, 11111);

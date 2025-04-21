@@ -1,134 +1,45 @@
-// // models/care.ts
-// import mongoose, { Schema, Document, models, model } from 'mongoose';
-
-// export interface ICare extends Document {
-//     user_id: mongoose.Types.ObjectId;
-//     category: 'childcare' | 'mentalphysical' | 'mealservice' | 'tutoring';
-//     workingDays: string[];
-//     timings: 'Daily' | 'Weekly' | 'Monthly';
-//     languages: {
-//         id: Number,
-//         name: string;
-//         proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
-//     }[];
-//     hourlyRate: number;
-//     profilePic: string;
-//     username: string;
-//     gender: string;
-//     dateOfBirth: Date;
-//     about: string;
-//     skills: string;
-//     location: string;
-//     ratings: Number;
-// }
-
-// const CareSchema = new Schema<ICare>(
-//     {
-//         user_id: {
-//             type: Schema.Types.ObjectId,
-//             ref: 'User', // <-- This tells Mongoose to reference the 'User' collection
-//         },
-//         category: {
-//             type: String,
-//             enum: ['childcare', 'mentalphysical', 'mealservice', 'tutoring'],
-//         },
-//         workingDays: {
-//             type: [String],
-//         },
-//         timings: {
-//             type: String,
-//             enum: ['Daily', 'Weekly', 'Monthly'],
-//         },
-//         languages: [
-//             {
-//                 id: Number,
-//                 language: { type: String },
-//                 proficiency: {
-//                     type: String,
-//                     enum: ['Beginner', 'Intermediate', 'Advanced'],
-//                 },
-//             },
-//         ],
-//         hourlyRate: {
-//             type: Number,
-//         },
-//         profilePic: {
-//             type: String,
-//             default: '',
-//         },
-//         username: {
-//             type: String,
-//         },
-//         gender: {
-//             type: String,
-//         },
-//         dateOfBirth: {
-//             type: Date,
-//         },
-//         about: {
-//             type: String,
-//         },
-//         skills: {
-//             type: String,
-//         },
-//         location: {
-//             type: String,
-//             default: "Mumbai"
-//         },
-//         ratings: {
-//             type: Number,
-//             default: 4.5
-//         },
-//     },
-//     { timestamps: true }
-// );
-
-// // Avoid model overwrite issues in dev
-// const Care = models.Care || model<ICare>('Care', CareSchema);
-// export default Care;
-
-
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
 export interface ICare extends Document {
-    user_id: mongoose.Types.ObjectId;
-    category: 'childcare' | 'mentalphysical' | 'mealservice' | 'tutoring';
-    workingDays: string[];
-    timings: 'Daily' | 'Weekly' | 'Monthly';
-    languages: {
-        id: Number,
+    user_id?: mongoose.Types.ObjectId;
+    category?: 'childcare' | 'mentalphysical' | 'mealservice' | 'tutoring';
+    workingDays?: string[];
+    timings?: 'Daily' | 'Weekly' | 'Monthly';
+    languages?: {
         name: string;
         proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
     }[];
-    hourlyRate: number;
-    profilePic: string;
-    username: string;
-    gender: string;
-    dateOfBirth: Date;
-    about: string;
-    skills: string;
-    location: string;
-    ratings: Number;
-    // New optional fields
-    fullName?: string;
-    email?: string;
-    age?: string;
-    jobTitle?: string;
-    repost?: Date;
-    jobData?: Record<string, any>;
-    profileViews?: number;
-    howOftenCanWork?: string;
-    canStartWithin?: string;
-    professionalExperience?: string;
-    professionalSkills?: string;
-    availableLocation?: string[];
-    availableWorkDays?: string[];
-    ageGroups?: string[];
-    overNightCare?: string;
-    smoker?: string;
-    city?: string;
-    languagesSpoken?: string[];
-    schoolDropOff?: string;
+    hourlyRate?: number;
+    profilePic?: string;
+    username?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    about?: string;
+    skills?: string;
+    location?: string;
+    ratings?: number;
+
+    // New fields from CareFormContext
+    zipCode?: string;
+    experience?: string;
+
+    // Tutoring specific fields
+    mode?: string;
+
+    // Child care specific fields
+    schoolDrop?: boolean;
+    smoking?: boolean;
+    overnightCare?: boolean;
+    ageBand?: string;
+    jobTiming?: string;
+    careFor?: number;
+
+    // Meal service specific fields
+    travelDistance?: string;
+    serviceType?: string;
+    mealPrice?: string;
+    offerSubscription?: boolean;
+    mealTypes?: string[];
 }
 
 const CareSchema = new Schema<ICare>(
@@ -136,119 +47,131 @@ const CareSchema = new Schema<ICare>(
         user_id: {
             type: Schema.Types.ObjectId,
             ref: 'User',
+            required: false
         },
         category: {
             type: String,
             enum: ['childcare', 'mentalphysical', 'mealservice', 'tutoring'],
+            required: false
         },
         workingDays: {
             type: [String],
+            required: false
         },
         timings: {
             type: String,
             enum: ['Daily', 'Weekly', 'Monthly'],
+            required: false
         },
         languages: [{
-            id: Number,
-            language: { type: String },
+            name: { type: String },
             proficiency: {
                 type: String,
-                enum: ['Beginner', 'Intermediate', 'Advanced'],
-            },
+                enum: ['Beginner', 'Intermediate', 'Advanced']
+            }
         }],
         hourlyRate: {
             type: Number,
+            required: false
         },
         profilePic: {
             type: String,
             default: '',
+            required: false
         },
         username: {
             type: String,
+            required: false
         },
         gender: {
             type: String,
+            required: false
         },
         dateOfBirth: {
             type: Date,
+            required: false
         },
         about: {
             type: String,
+            required: false
         },
         skills: {
             type: String,
+            required: false
         },
         location: {
             type: String,
-            default: "Mumbai"
+            default: "Mumbai",
+            required: false
         },
         ratings: {
             type: Number,
-            default: 4.5
+            default: 4.5,
+            required: false
         },
-        // New optional fields
-        fullName: {
-            type: String
+
+        // New fields from CareFormContext
+        zipCode: {
+            type: String,
+            required: false
         },
-        email: {
-            type: String
+        experience: {
+            type: String,
+            required: false
         },
-        age: {
-            type: String
+
+        // Tutoring specific fields
+        mode: {
+            type: String,
+            required: false
         },
-        jobTitle: {
-            type: String
+
+        // Child care specific fields
+        schoolDrop: {
+            type: Boolean,
+            required: false
         },
-        repost: {
-            type: Date,
-            default: Date.now()
+        smoking: {
+            type: Boolean,
+            required: false
         },
-        jobData: {
-            type: Object
+        overnightCare: {
+            type: Boolean,
+            required: false
         },
-        profileViews: {
+        ageBand: {
+            type: String,
+            required: false
+        },
+        jobTiming: {
+            type: String,
+            required: false
+        },
+        careFor: {
             type: Number,
-            default: 0
+            required: false
         },
-        howOftenCanWork: {
-            type: String
+
+        // Meal service specific fields
+        travelDistance: {
+            type: String,
+            required: false
         },
-        canStartWithin: {
-            type: String
+        serviceType: {
+            type: String,
+            required: false
         },
-        professionalExperience: {
-            type: String
+        mealPrice: {
+            type: String,
+            required: false
         },
-        professionalSkills: {
-            type: String
+        offerSubscription: {
+            type: Boolean,
+            required: false
         },
-        availableLocation: {
+        mealTypes: {
             type: [String],
-            default: []
-        },
-        availableWorkDays: {
-            type: [String],
-            default: []
-        },
-        ageGroups: {
-            type: [String],
-            default: []
-        },
-        overNightCare: {
-            type: String
-        },
-        smoker: {
-            type: String
-        },
-        city: {
-            type: String
-        },
-        languagesSpoken: {
-            type: [String],
-            default: []
-        },
-        schoolDropOff: {
-            type: String
+            required: false
         }
     },
     { timestamps: true }

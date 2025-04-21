@@ -31,8 +31,10 @@
     "**/*.tsx",
     "src/app/care/enrollment/[careType]/availability/page.jsx",
     "src/app/care/enrollment/[careType]/page.jsx",
-    "src/app/care/enrollment/[careType]/personal-details/page.jsx"
-, "src/app/profile/[user]/page.tsx"  ],
+    "src/app/care/enrollment/[careType]/personal-details/page.jsx",
+    "src/app/profile/[user]/page.tsx",
+    "src/app/components/ReviewSection.jsx"
+  ],
   "exclude": [
     "node_modules"
   ]
