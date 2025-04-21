@@ -38,16 +38,17 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${merriweather.variable} antialiased`}
       >
-        <AuthProvider>
+        
         <CareFormProvider>
         <FindJobProvider>
           <AppProvider>
             <SidebarMobile/>
+            <AuthProvider>
             {children}
+            </AuthProvider>
             </AppProvider>
         </FindJobProvider>
         </CareFormProvider>
-        </AuthProvider>
       </body>
     </html>
   );

@@ -33,24 +33,34 @@ export default function LoginContainer() {
     setIsSubmitted(true);
 
     if (validateLoginForm(formData, setErrors)) {
-      setIsLoading(true); // Start loader
-      const result = await loginUser(BASE_URL, {
-        email: formData.email,
-        password: formData.password,
-      });
-      setToken(result.token)
-      setIsLoading(false); // Stop loader
-      
-      if (result.success) {
-        router.push("/");
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          email: "Invalid email or password",
-        }));
-      }
+        setIsLoading(true);
+        try {
+            const result = await loginUser(BASE_URL, {
+                email: formData.email,
+                password: formData.password,
+            });
+
+            if (result.success && result.token) {
+                setToken(result.token); // This will update the auth context and set the cookie
+                router.push('/');
+            } else {
+                setErrors((prev) => ({
+                    ...prev,
+                    email: result.message || "Invalid email or password",
+                }));
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            setErrors((prev) => ({
+                ...prev,
+                email: "An error occurred during login",
+            }));
+        } finally {
+            setIsLoading(false);
+        }
     }
-  };
+};
+
 
   const handleGoogleLogin = async () => {
     setIsLoading(true); // Start loader

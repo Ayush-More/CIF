@@ -12,6 +12,7 @@
     "bcryptjs": "^3.0.2",
     "careforindians": "file:",
     "cloudinary": "^2.6.0",
+    "jose": "^6.0.10",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.501.0",

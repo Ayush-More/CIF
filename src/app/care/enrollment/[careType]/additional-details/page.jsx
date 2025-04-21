@@ -220,7 +220,7 @@ export default function AdditionalDetails() {
                 <p className="text-[15px] font-[500]">Zip Code</p>
                 <input
                   type="text"
-                  className="border text-[13px] px-4 py-2 rounded-full w-full"
+                  className="border text-[13px] px-4 py-2 rounded-lg w-full"
                   placeholder="Enter zip code"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
@@ -234,7 +234,7 @@ export default function AdditionalDetails() {
                 <p className="text-[15px] font-[500]">Location</p>
                 <input
                   type="text"
-                  className="border text-[13px] px-4 py-2 rounded-full w-full bg-gray-100"
+                  className="border text-[13px] px-4 py-2 rounded-lg w-full bg-gray-100"
                   placeholder="District, State"
                   value={location}
                   readOnly
