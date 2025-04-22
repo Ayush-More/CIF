@@ -41,6 +41,7 @@ export default function LoginContainer() {
             });
 
             if (result.success && result.token) {
+              console.log(result.token)
                 setToken(result.token); // This will update the auth context and set the cookie
                 router.push('/');
             } else {

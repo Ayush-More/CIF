@@ -16,7 +16,7 @@ export default function Availability() {
   const [languages, setLanguages] = useState(
     formData.languages && formData.languages.length > 0
       ? formData.languages
-      : [{ id: 1, language: "", proficiency: "" }]
+      : [{ id: 1, name: "", proficiency: "" }]
   );
   const [hourlyRate, setHourlyRate] = useState(formData.hourlyRate || 10);
 
@@ -38,7 +38,7 @@ export default function Availability() {
       });
       return;
     }
-    setLanguages([...languages, { id: languages.length + 1, language: "", proficiency: "" }]);
+    setLanguages([...languages, { id: languages.length + 1, name: "", proficiency: "" }]);
   };
 
   const handleRemoveLanguage = (id) => {
@@ -80,7 +80,7 @@ export default function Availability() {
 
     // Validate languages
     const hasEmptyLanguage = languages.some(
-      lang => !lang.language || !lang.proficiency
+      lang => !lang.name || !lang.proficiency
     );
     if (hasEmptyLanguage) {
       errors.push("Please complete all language selections with both language and proficiency");
@@ -112,7 +112,7 @@ export default function Availability() {
     const formDataToUpdate = {
       workingDays: selectedDays,
       timings: selectedTiming,
-      languages: languages.filter(lang => lang.language && lang.proficiency), // Only save complete language entries
+      languages: languages.filter(lang => lang.name && lang.proficiency), // Only save complete language entries
       hourlyRate: Number(hourlyRate),
     };
 
@@ -131,7 +131,7 @@ export default function Availability() {
       const formDataToUpdate = {
         workingDays: selectedDays,
         timings: selectedTiming,
-        languages: languages.filter(lang => lang.language && lang.proficiency),
+        languages: languages.filter(lang => lang.name && lang.proficiency),
         hourlyRate: Number(hourlyRate),
       };
 
@@ -264,9 +264,9 @@ export default function Availability() {
                   >
                     <select
                       className="custom-select border text-[13px] px-8 py-2 rounded-full"
-                      value={language.language}
+                      value={language.name}
                       onChange={(e) =>
-                        handleLanguageChange(language.id, "language", e.target.value)
+                        handleLanguageChange(language.id, "name", e.target.value)
                       }
                     >
                       <option value="">Select Language</option>

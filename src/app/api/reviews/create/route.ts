@@ -20,6 +20,20 @@ export async function POST(req: NextRequest) {
 
         const careObjectId = new mongoose.Types.ObjectId(care_id);
         const userObjectId = new mongoose.Types.ObjectId(user_id);
+        // Get all reviews for this care provider
+        const allReviews = await Review.find({ care_id: careObjectId });
+
+        // Calculate new average rating
+        const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = totalRating / allReviews.length;
+        console.log(allReviews)
+
+        // Update care provider document
+        await Care.findByIdAndUpdate(care_id, {
+            total_reviews: allReviews.length,
+            average_rating: averageRating.toFixed(1)
+        });
+
 
         // Check if user has already reviewed
         const existingReview = await Review.findOne({

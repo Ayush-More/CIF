@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
             .limit(limit)
             .populate({
                 path: 'user_id',
-                select: 'name email profilePic username', // Include relevant user fields
+                select: 'fullName email profilePic', // Include relevant user fields
                 model: 'User' // Explicitly specify the model
             })
             .lean();
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
         const formattedReviews = reviews.map(review => ({
             ...review,
             user: {
-                name: review.user_id?.name || review.user_id?.username,
+                name: review.user_id?.fullName || review.user_id?.username,
                 email: review.user_id?.email,
                 profilePic: review.user_id?.profilePic
             }

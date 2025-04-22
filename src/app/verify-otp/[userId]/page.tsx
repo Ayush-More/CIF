@@ -5,7 +5,7 @@ export default function VerifyOtp() {
   return (
     <>
       <Navbar />
-      <div className="py-24 flex justify-center">
+      <div className="py-24 mt-25 flex justify-center">
         <VerifyOtpContainer />
       </div>
     </>

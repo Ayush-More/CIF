@@ -1,7 +1,13 @@
+import { Star } from 'lucide-react'
+import { useState } from 'react';
+
 
 export default function ProfileCard({ data }) {
   if (!data) return null;
+  const [showFullAbout, setShowFullAbout] = useState(false);
 
+  const toggleAbout = () => setShowFullAbout(prev => !prev);
+  
   // Format the category name for display
   const formatCategory = (category) => {
     if (!category) return '';
@@ -49,7 +55,7 @@ export default function ProfileCard({ data }) {
   };
 
   const highlights = getHighlights();
-  const displayRating = data.ratings || 4.5; // Default to 4.5 if no rating
+  const displayRating = data.average_rating || 4.5; // Default to 4.5 if no rating
 
   return (
     <div className="bg-white rounded-lg w-full flex flex-col md:flex-row gap-4">
@@ -76,23 +82,49 @@ export default function ProfileCard({ data }) {
           </div>
           <div className="flex gap-2 items-center mt-[1px] md:mt-0">
             <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((item) => {
+              {[1, 2, 3, 4, 5].map((star) => {
                 return (
-                  <img
-                    src={item <= displayRating ? "/Icons/star.svg" : "/Icons/star_empty.svg"}
-                    alt=""
-                    className="h-[20px]"
-                    key={item}
-                  />
+                  <Star
+                              key={star}
+                              className={`w-6 h-5 cursor-pointer transition-all duration-200 hover:scale-110 ${
+                                star <= displayRating
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'fill-none text-gray-300'
+                              }`}
+                            />
+                  // <img
+                  //   src={item <= displayRating ? "/Icons/star.svg" : "/Icons/star_empty.svg"}
+                  //   alt=""
+                  //   className="h-[20px]"
+                  //   key={item}
+                  // />
                 );
               })}
             </div>
-            <span className="text-[#475467] text-[13px]">({Math.floor(Math.random() * 100) + 10} reviews)</span>
+            <span className="text-[#475467] text-[13px]">
+              ({data.total_reviews || 0} reviews)
+            </span>
           </div>
         </div>
-        <div className="text-[13px] text-[#475467]">
+        {/* <div className="text-[13px] text-[#475467]">
           {data.about ? data.about.substring(0, 150) + (data.about.length > 150 ? '...' : '') : 'No description available'}
-        </div>
+        </div> */}
+        <div className="text-[13px] text-[#475467]">
+  {data.about ? (
+    <>
+      {showFullAbout ? data.about : `${data.about.substring(0, 150)}${data.about.length > 150 ? '...' : ''}`}
+      {data.about.length > 150 && (
+        <button
+          onClick={toggleAbout}
+          className="text-blue-600 ml-1 hover:underline"
+        >
+          {showFullAbout ? 'Show less' : 'Read more'}
+        </button>
+      )}
+    </>
+  ) : 'No description available'}
+</div>
+
         <div>
           <h1 className="text-[15px] text-[#101828] font-[600]">
             Highlights

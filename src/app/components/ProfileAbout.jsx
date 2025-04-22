@@ -74,7 +74,7 @@ export default function ProfileAbout({ data }) {
       )}
 
       {/* If we don't have enough paragraphs, display skills in a separate section */}
-      {aboutParagraphs.length <= 3 && data.skills && (
+      {data.skills && (
         <div className="mt-5">
           <span className="text-[#475467] font-[600] text-[16px]">
             Skills & Specializations

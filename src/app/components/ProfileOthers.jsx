@@ -1,5 +1,6 @@
 export default function ProfileOthers({ data }) {
   if (!data) return null
+  console.log(data , 4444)
 
   // Format experience based on available data
   const getExperienceText = () => {
@@ -43,8 +44,8 @@ export default function ProfileOthers({ data }) {
           <img src="/Icons/star_u.svg" alt="" className="h-4" />
           {getExperienceText()}
         </div>
-        <div className="text-[#475467] text-[13px] mt-4">{data.skills || data.about}</div>
-        <img src="/Icons/trusted.svg" alt="" className="h-16 mt-4" />
+        {/* <div className="text-[#475467] text-[13px] mt-4">{data.skills || data.about}</div> */}
+        <img src="/Icons/trusted.svg" alt="" className="h-12 mt-4" />
       </div>
 
       <div className="mt-8">
@@ -64,9 +65,9 @@ export default function ProfileOthers({ data }) {
                 className="flex px-4 items-center bg-[#F2F3F4] rounded-3xl py-[9px] gap-2 text-[13px] font-[500]"
               >
                 <img
-                  src={`/Icons/${lang.name?.toLowerCase() === "english" ? "america" : "india"}.svg`}
+                  src={`/Icons/${lang.name?.toLowerCase() || "india"}.svg`}
                   alt={lang.name}
-                  className="h-[14px]"
+                  className="h-[16px]"
                 />
                 {lang.name}
               </button>
@@ -79,7 +80,7 @@ export default function ProfileOthers({ data }) {
               </button>
               {data.location === "Mumbai" && (
                 <button className="flex px-4 items-center bg-[#F2F3F4] rounded-3xl py-[9px] gap-2 text-[13px] font-[500]">
-                  <img src="/Icons/india.svg" alt="Hindi" className="h-[18px]" />
+                  <img src="/Icons/india.svg" alt="Hindi" className="h-[14px]" />
                   Hindi
                 </button>
               )}

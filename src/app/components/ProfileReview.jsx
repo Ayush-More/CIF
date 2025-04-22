@@ -60,7 +60,7 @@ export default function ProfileReview({ careId }) {
     try {
       const response = await createReview({
         care_id: careId,
-        user_id: userData?.id,
+        user_id: userData?.userId,
         rating: rating,
         comment: comment,
       })

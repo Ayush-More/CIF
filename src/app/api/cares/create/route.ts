@@ -57,7 +57,8 @@ export async function POST(req: NextRequest) {
         // Set default values
         const defaultValues = {
             location: "Mumbai",
-            ratings: 4.5,
+            total_reviews: 0,
+            average_rating: 5,
             profilePic: "https://cdn-icons-png.flaticon.com/512/1808/1808546.png"
         };
 

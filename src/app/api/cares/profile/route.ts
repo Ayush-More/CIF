@@ -13,13 +13,26 @@ export async function GET(req: NextRequest) {
     try {
         await connectToDatabase();
 
-        const careProfile = await Care.findOne({ user_id: userId });
+        const careProfile = await Care.findOne({ user_id: userId })
+            .select('+total_reviews +average_rating') // Ensure these fields are included
+            .lean();
 
         if (!careProfile) {
             return NextResponse.json({ message: 'Profile not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ message: 'Profile retrieved successfully', data: careProfile });
+        // Transform the data to include formatted review data
+        const formattedProfile = {
+            ...careProfile,
+            average_rating: careProfile.average_rating || 3,
+            total_reviews: careProfile.total_reviews || 0
+        };
+        console.log(formattedProfile, 11111)
+
+        return NextResponse.json({
+            message: 'Profile retrieved successfully',
+            data: formattedProfile
+        });
     } catch (error) {
         return NextResponse.json({ message: 'Failed to retrieve profile', error }, { status: 500 });
     }

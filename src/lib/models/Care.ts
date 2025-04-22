@@ -17,7 +17,8 @@ export interface ICare extends Document {
     about?: string;
     skills?: string;
     location?: string;
-    ratings?: number;
+    total_reviews?: number;
+    average_rating?: number;
 
     // New fields from CareFormContext
     zipCode?: string;
@@ -104,10 +105,13 @@ const CareSchema = new Schema<ICare>(
             default: "Mumbai",
             required: false
         },
-        ratings: {
+        total_reviews: {
             type: Number,
-            default: 4.5,
-            required: false
+            default: 0
+        },
+        average_rating: {
+            type: Number,
+            default: 0
         },
 
         // New fields from CareFormContext
@@ -176,6 +180,12 @@ const CareSchema = new Schema<ICare>(
     },
     { timestamps: true }
 );
+
+// export interface CareResponse {
+//     message: string;
+//     data: ICare;
+//     success?: boolean;
+// }
 
 // Avoid model overwrite issues in dev
 const Care = models.Care || model<ICare>('Care', CareSchema);
