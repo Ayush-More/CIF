@@ -16,24 +16,19 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
+        // Validate rating
+        const numericRating = Number(rating) || 5; // Convert to number, default to 5 if invalid
+        if (numericRating < 1 || numericRating > 5) {
+            return NextResponse.json({
+                success: false,
+                message: 'Rating must be between 1 and 5'
+            }, { status: 400 });
+        }
+
         await connectToDatabase();
 
         const careObjectId = new mongoose.Types.ObjectId(care_id);
         const userObjectId = new mongoose.Types.ObjectId(user_id);
-        // Get all reviews for this care provider
-        const allReviews = await Review.find({ care_id: careObjectId });
-
-        // Calculate new average rating
-        const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0);
-        const averageRating = totalRating / allReviews.length;
-        console.log(allReviews)
-
-        // Update care provider document
-        await Care.findByIdAndUpdate(care_id, {
-            total_reviews: allReviews.length,
-            average_rating: averageRating.toFixed(1)
-        });
-
 
         // Check if user has already reviewed
         const existingReview = await Review.findOne({
@@ -46,7 +41,7 @@ export async function POST(req: NextRequest) {
                 success: false,
                 message: 'You have already reviewed this care provider',
                 error: 'DUPLICATE_REVIEW'
-            }, { status: 409 }); // 409 Conflict
+            }, { status: 409 });
         }
 
         // Check if the care provider exists
@@ -58,12 +53,29 @@ export async function POST(req: NextRequest) {
             }, { status: 404 });
         }
 
-        // Create the review
+        // Create the review first
         const review = await Review.create({
             care_id: careObjectId,
             user_id: userObjectId,
-            rating: rating || 5,
+            rating: numericRating,
             comment,
+        });
+
+        // After creating the review, get all reviews including the new one
+        const allReviews = await Review.find({ care_id: careObjectId });
+
+        // Calculate new average rating
+        const totalRating = allReviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+        const averageRating = allReviews.length > 0 ?
+            Number((totalRating / allReviews.length).toFixed(1)) :
+            numericRating; // If this is the first review, use its rating
+
+        // Update care provider document with the new average
+        await Care.findByIdAndUpdate(careObjectId, {
+            $set: {
+                total_reviews: allReviews.length,
+                average_rating: averageRating
+            }
         });
 
         // Populate user details in the response
