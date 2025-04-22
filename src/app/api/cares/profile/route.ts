@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from './../../../../lib/mongodb';
-import Care from './../../../../lib/models/Care';
+import Care, { ICare } from './../../../../lib/models/Care';
+
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -13,9 +14,12 @@ export async function GET(req: NextRequest) {
     try {
         await connectToDatabase();
 
+        // const careProfile = await Care.findOne({ user_id: userId })
+        //     .select('+total_reviews +average_rating') // Ensure these fields are included
+        //     .lean();
         const careProfile = await Care.findOne({ user_id: userId })
-            .select('+total_reviews +average_rating') // Ensure these fields are included
-            .lean();
+            .select('+total_reviews +average_rating')
+            .lean() as unknown as ICare;
 
         if (!careProfile) {
             return NextResponse.json({ message: 'Profile not found' }, { status: 404 });

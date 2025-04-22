@@ -17,8 +17,8 @@ export interface ICare extends Document {
     about?: string;
     skills?: string;
     location?: string;
-    total_reviews?: number;
-    average_rating?: number;
+    total_reviews: number;
+    average_rating: number;
 
     // New fields from CareFormContext
     zipCode?: string;
