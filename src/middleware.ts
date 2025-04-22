@@ -7,8 +7,6 @@ export async function middleware(request: NextRequest) {
 
     // Define protected routes
     const protectedRoutes = [
-        '/search',
-        '/profile',
         '/dashboard'
     ];
 
@@ -41,8 +39,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/search/:path*',
-        '/profile/:path*',
         '/dashboard/:path*',
     ]
 };
