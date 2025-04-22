@@ -62,11 +62,11 @@ export default function Search() {
                 <input
                   type="text"
                   placeholder="Search care centers"
-                  className="outline-none border border-[#0000001A] rounded-3xl px-[13px] py-[9px] text-[13px] font-[500]"
+                  className="outline-none border border-[#0000001A] rounded-2xl px-[13px] py-[9px] text-[13px] w-2xl font-[500]"
                   value={searchTerm}
                   onChange={handleSearch} // Search handler
                 />
-                <select
+                {/* <select
                   name="Category"
                   id=""
                   className="custom-select outline-none border border-[#0000001A] rounded-3xl px-[13px] py-[9px] text-[13px] font-[500]"
@@ -101,7 +101,7 @@ export default function Search() {
                   <option value="" disabled>
                     Ratings
                   </option>
-                </select>
+                </select> */}
               </div>
             </div>
             <div className="text-[12px] mt-[6px] text-[#475467] hidden md:block">
