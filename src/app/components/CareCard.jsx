@@ -19,7 +19,7 @@ export default function CareCard({ data, handleCardClick }) {
           </div>
           <div className="flex items-center gap-[5px]">
             <img src="/Icons/location.svg" alt="" className="h-[20px]" />
-            <span className="text-[17px] font-[400]">
+            <span className="text-[15px] font-[400]">
               {data?.location}
             </span>
           </div>

@@ -4,6 +4,7 @@ import CareCard from "../components/CareCard";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Modal from "../components/Modal";
+import FilterSidebar from "../components/FilterSidebar";
 import { listCare } from "../services/auth";
 
 export default function Search() {
@@ -11,6 +12,17 @@ export default function Search() {
   const [cardData, setCardData] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredData, setFilteredData] = useState([]); // State for filtered data
+  const [filters, setFilters] = useState({});
+
+  const handleFilter = (newFilters) => {
+    setFilters(newFilters);
+    // Apply filters to your search results here
+  };
+
+  const handleClearFilters = () => {
+    setFilters({});
+    // Reset search results here
+  };
 
   const handleList = async () => {
     const result = await listCare();
@@ -49,8 +61,25 @@ export default function Search() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl px-5 mx-auto md:px-10 lg:px-14 xl:px-20 pt-16 md:pb-16">
-        <div>
+      <div className="max-w-full  mx-5 md:px-10 lg:px-10 xl:px-5 pt-14 md:pb-12">
+      <div className="flex flex-col pt-10 md:flex-row gap-6">
+      <div className="md:block">
+          <FilterSidebar
+            onFilter={handleFilter}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
+        <div className="w-full">
+        <div className="flex gap-[5px] w-full">
+                <input
+                  type="text"
+                  placeholder="Search care centers"
+                  className="outline-none border border-[#0000001A] rounded-2xl px-[13px] py-[9px] text-[13px] w-full font-[500]"
+                  value={searchTerm}
+                  onChange={handleSearch} // Search handler
+                />
+               
+              </div>
           <div>
             <div className="flex flex-col md:flex-row justify-between mt-[38px]">
               <h1 className="text-[26px] font-[500]">Care’s Near You</h1>
@@ -58,51 +87,7 @@ export default function Search() {
                 We are dedicated to providing evidence-based information about
                 care centers across America
               </div>
-              <div className="flex gap-[13px]">
-                <input
-                  type="text"
-                  placeholder="Search care centers"
-                  className="outline-none border border-[#0000001A] rounded-2xl px-[13px] py-[9px] text-[13px] w-2xl font-[500]"
-                  value={searchTerm}
-                  onChange={handleSearch} // Search handler
-                />
-                {/* <select
-                  name="Category"
-                  id=""
-                  className="custom-select outline-none border border-[#0000001A] rounded-3xl px-[13px] py-[9px] text-[13px] font-[500]"
-                >
-                  <option defaultValue="" disabled>
-                    Meal Services
-                  </option>
-                  <option defaultValue="" disabled>
-                    Tutoring
-                  </option>
-                  <option defaultValue="" disabled>
-                    Physical Mental Health
-                  </option>
-                  <option defaultValue="" disabled>
-                    Child Caring
-                  </option>
-                </select>
-                <select
-                  name="Filter Option"
-                  id=""
-                  className="custom-select outline-none border border-[#0000001A] rounded-3xl px-[13px] py-[9px] text-[13px] font-[500]"
-                >
-                  <option value="" disabled>
-                    Filter Option
-                  </option>
-                </select>
-                <select
-                  name="Ratings"
-                  id=""
-                  className="custom-select outline-none border border-[#0000001A] rounded-3xl px-[13px] py-[9px] text-[13px] font-[500]"
-                >
-                  <option value="" disabled>
-                    Ratings
-                  </option>
-                </select> */}
-              </div>
+           
             </div>
             <div className="text-[12px] mt-[6px] text-[#475467] hidden md:block">
               We are dedicated to providing evidence-based information about
@@ -124,6 +109,7 @@ export default function Search() {
               );
             })}
           </div>
+        </div>
         </div>
       </div>
       <Footer />
