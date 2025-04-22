@@ -1,8 +1,13 @@
 import { Star } from 'lucide-react'
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Add this import
 
 
 export default function ProfileCard({ data }) {
+  const router = useRouter(); // Initialize the router
+  const handleCardClick = () => {
+    router.push(`profile/${data.user_id}`);
+  };
   if (!data) return null;
   const [showFullAbout, setShowFullAbout] = useState(false);
 
@@ -58,7 +63,7 @@ export default function ProfileCard({ data }) {
   const displayRating = data.average_rating || 4.5; // Default to 4.5 if no rating
 
   return (
-    <div className="bg-white rounded-lg w-full flex flex-col md:flex-row gap-4">
+    <div className="bg-white rounded-lg w-full flex p-2 flex-col md:flex-row gap-4" onClick={handleCardClick}>
       <div className="md:w-[40%] h-[225px]">
         <img
           src={data.profilePic || "/placeholder.jpg"}

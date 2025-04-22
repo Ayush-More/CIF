@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
+import { X } from 'lucide-react'; // Import X icon for close button
 
-export default function FilterSidebar({ onFilter, onClearFilters }) {
+export default function FilterSidebar({ onFilter, onClearFilters, isMobileOpen, setIsMobileOpen }) {
   const [selectedService, setSelectedService] = useState('');
   const [filters, setFilters] = useState({
     selectedLocation: '',
@@ -13,14 +14,26 @@ export default function FilterSidebar({ onFilter, onClearFilters }) {
     trainingMode: ''
   });
 
+    // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileOpen && !event.target.closest('.filter-sidebar')) {
+        setIsMobileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileOpen, setIsMobileOpen]);
+
   const services = [
     { id: 'childcare', label: 'Child Care' },
     { id: 'mentalphysical', label: 'Mental & Physical' },
     { id: 'tutoring', label: 'Tutoring' },
-    { id: 'meal', label: 'Meal Service' }
+    { id: 'mealservice', label: 'Meal Service' } // Changed from 'meal' to 'mealservice'
   ];
 
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const trainingModes = ['Online', 'In-Person', 'Hybrid'];
 
  
@@ -85,14 +98,34 @@ const handleRateChange = (type, value) => {
       childcare: [...commonFilters, 'overNightCare', 'schoolDropOff'],
       mentalphysical: [...commonFilters, 'trainingMode'],
       tutoring: [...commonFilters],
-      meal: [...commonFilters, 'monthlySubscription']
+      mealservice: [...commonFilters, 'monthlySubscription'] // Changed from 'meal' to 'mealservice'
     };
 
     return serviceFilters[selectedService] || [];
   };
 
   return (
+  <>
+   {isMobileOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 md:hidden" />
+      )}
     <div className="w-full md:w-[280px] bg-white p-4 rounded-lg shadow-sm">
+    <div
+        className={`filter-sidebar fixed md:relative inset-y-0 left-0 w-[280px] md:w-full bg-white transform 
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
+          md:translate-x-0 transition-transform duration-300 ease-in-out 
+          h-full md:h-auto overflow-y-auto md:overflow-visible`}
+      >
+         <div className="flex justify-between items-center mb-6 md:hidden">
+            <h2 className="text-[#101828] text-[17px] font-[600]">Filters</h2>
+            <button
+              onClick={() => setIsMobileOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+        
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-[#101828] text-[17px] font-[600]">Filters</h2>
         <button
@@ -171,10 +204,10 @@ const handleRateChange = (type, value) => {
           {getVisibleFilters().includes('hourlyRate') && (
   <div className="mb-6">
     <label className="text-[15px] text-[#101828] font-[500] mb-2 block">
-      {selectedService === 'meal' ? 'Meal Rate' : 'Hourly Rate'}
+      {selectedService === 'mealservice' ? 'Meal Rate' : 'Hourly Rate'}
     </label>
     <p className="text-[14px] font-[600]">
-      ${selectedService === 'meal' ? filters.mealRate : filters.hourlyRate}
+      ${selectedService === 'mealservice' ? filters.mealRate : filters.hourlyRate}
     </p>
     <div className="w-full items-center slider-container">
       <input
@@ -182,9 +215,9 @@ const handleRateChange = (type, value) => {
         min="10"
         max="100"
         step="1"
-        value={selectedService === 'meal' ? filters.mealRate : filters.hourlyRate}
+        value={selectedService === 'mealservice' ? filters.mealRate : filters.hourlyRate}
         onChange={(e) => handleRateChange(
-          selectedService === 'meal' ? 'mealRate' : 'hourlyRate',
+          selectedService === 'mealservice' ? 'mealRate' : 'hourlyRate',
           e.target.value
         )}
         className="w-full appearance-none cursor-pointer custom-slider"
@@ -280,7 +313,7 @@ const handleRateChange = (type, value) => {
   .custom-slider {
     --min: 10;
     --max: 100;
-    --value: ${selectedService === 'meal' ? filters.mealRate : filters.hourlyRate};
+    --value: ${selectedService === 'mealservice' ? filters.mealRate : filters.hourlyRate};
   }
 `}</style>
 
@@ -338,7 +371,7 @@ const handleRateChange = (type, value) => {
           )}
 
           {/* Meal Service Specific Filters */}
-          {selectedService === 'meal' && getVisibleFilters().includes('monthlySubscription') && (
+          {selectedService === 'mealservice' && getVisibleFilters().includes('monthlySubscription') && (
             <div className="mb-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -356,5 +389,7 @@ const handleRateChange = (type, value) => {
         </>
       )}
     </div>
+    </div>
+    </>
   );
 }
