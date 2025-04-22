@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
             .limit(limit)
             .populate({
                 path: 'user_id',
-                select: 'fullName email profilePic', // Include relevant user fields
+                select: 'fullName email', // Include relevant user fields
                 model: 'User' // Explicitly specify the model
             })
             .lean();

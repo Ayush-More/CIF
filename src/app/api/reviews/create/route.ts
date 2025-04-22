@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
         const populatedReview = await Review.findById(review._id)
             .populate({
                 path: 'user_id',
-                select: 'name email profilePic username',
+                select: 'fullName',
                 model: 'User'
             })
             .lean();

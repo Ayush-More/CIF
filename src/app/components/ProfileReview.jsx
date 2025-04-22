@@ -68,7 +68,7 @@ export default function ProfileReview({ careId }) {
       if (response.success && response.review) {
         const newReview = {
           id: response.review._id,
-          name: response.review.user_id?.name || userData?.name || "Anonymous User",
+          name: response.review.user_id?.fullName || userData?.name || "Anonymous User",
           email: response.review.user_id?.email,
           date: new Date().toLocaleDateString("en-US", {
             month: "long",
