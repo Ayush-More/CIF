@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from './../../../../lib/mongodb';
 import Review from './../../../../lib/models/Review';
+import User from './../../../../lib/models/User';
 import mongoose from 'mongoose';
 
 export async function GET(req: NextRequest) {
@@ -18,6 +19,10 @@ export async function GET(req: NextRequest) {
         }
 
         await connectToDatabase();
+        // Ensure User model is imported before using it in population
+        if (!mongoose.models.User) {
+            mongoose.model('User', User.schema);
+        }
 
         const careObjectId = new mongoose.Types.ObjectId(care_id);
 
