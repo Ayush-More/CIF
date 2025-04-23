@@ -327,14 +327,12 @@
 
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import FilterSidebar from '../components/FilterSidebar';
 import SearchBar from '../components/SearchBar';
 import SearchCard from '../components/SearchCard';
 import Navbar from '../components/Navbar';
 import { Filter } from 'lucide-react';
-import CareCard from "../components/CareCard";
-import { listCare } from '../services/auth';
 import { useSearchParams } from 'next/navigation';
 
 // Define TypeScript interfaces
@@ -379,7 +377,7 @@ const CATEGORY_MAP: { [key: string]: string } = {
   'Mental and Physical health': 'mentalphysical'
 };
 
-export default function SearchPage() {
+function SearchContent() {
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({});
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -503,12 +501,6 @@ export default function SearchPage() {
           return false;
         }
 
-        // if (currentFilters.availableOn?.length > 0) {
-        //   const hasMatchingDays = currentFilters.availableOn.some(day =>
-        //     item.workingDays?.includes(day.substring(0, 3))
-        //   );
-        //   if (!hasMatchingDays) return false;
-        // }
         if (currentFilters.availableOn && currentFilters.availableOn.length > 0) {
           const hasMatchingDays = currentFilters.availableOn.some(day =>
             item.workingDays?.includes(day.substring(0, 3))
@@ -561,9 +553,7 @@ export default function SearchPage() {
     setFilteredResults(allResults);
   };
 
-  // Rest of your JSX remains the same
   return (
-    // ... your existing JSX ...
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       {/* Search Section */}
@@ -626,7 +616,7 @@ export default function SearchPage() {
                       key={result._id}
                       data={{
                         ...result,
-                        id: result._id, // Ensure ID is properly passed
+                        id: result._id,
                         user_id: result.user_id,
                         category: result.category,
                         location: result.location,
@@ -637,7 +627,6 @@ export default function SearchPage() {
                         total_reviews: result.total_reviews,
                         hourlyRate: result.hourlyRate,
                         workingDays: result.workingDays,
-                        // Additional fields specific to each category
                         overNightCare: result.overnightCare,
                         schoolDropOff: result.schoolDrop,
                         mealPrice: result.mealPrice,
@@ -648,7 +637,6 @@ export default function SearchPage() {
                         jobTiming: result.jobTiming,
                         mode: result.mode
                       }}
-
                     />
                   ))}
                 </div>
@@ -674,5 +662,20 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main page component
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-700">Loading...</h2>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
