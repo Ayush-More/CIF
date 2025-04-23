@@ -127,7 +127,7 @@
 import { useState, useEffect } from 'react';
 import FilterSidebar from '../components/FilterSidebar';
 import SearchBar from '../components/SearchBar';
-import ProfileCard from '../components/ProfileCard';
+import SearchCard from '../components/SearchCard';
 import Navbar from '../components/Navbar';
 import { Filter } from 'lucide-react';
  import CareCard from "../components/CareCard";
@@ -333,7 +333,7 @@ export default function SearchPage() {
               <>
                 <div className="mt-[26px] flex flex-col gap-[19px]">
                   {filteredResults.map((result) => (
-                    <ProfileCard 
+                    <SearchCard 
                       key={result._id} 
                       data={{
                         ...result,
@@ -359,9 +359,7 @@ export default function SearchPage() {
                         jobTiming: result.jobTiming,
                         mode: result.mode
                       }}
-                      onClick={()=>{
-                        Router.push(`/profile/${result.id}`)
-                      }}
+                    
                     />
                   ))}
                 </div>

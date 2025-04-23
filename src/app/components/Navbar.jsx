@@ -158,7 +158,7 @@ export default function Navbar() {
             <Link href="/search" className="hover:text-[#EF5744]">
               Search
             </Link>
-            <Link href="/" className="hover:text-[#EF5744]">
+            <Link href="/about" className="hover:text-[#EF5744]">
               About us
             </Link>
             <div className="relative">
