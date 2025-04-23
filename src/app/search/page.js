@@ -130,8 +130,17 @@ import SearchBar from '../components/SearchBar';
 import SearchCard from '../components/SearchCard';
 import Navbar from '../components/Navbar';
 import { Filter } from 'lucide-react';
- import CareCard from "../components/CareCard";
+import CareCard from "../components/CareCard";
 import { listCare } from '../services/auth';
+import { useSearchParams } from 'next/navigation';
+
+// Define categoryMap at the top level, outside the component
+const CATEGORY_MAP = {
+  'Meal Service': 'mealservice',
+  'Tutoring': 'tutoring',
+  'Child care': 'childcare',
+  'Mental and Physical health': 'mentalphysical'
+};
 
 export default function SearchPage() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -141,47 +150,108 @@ export default function SearchPage() {
   const [allResults, setAllResults] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pagination, setPagination] = useState(null);
+  const searchParams = useSearchParams();
 
-  // Fetch initial data
-  useEffect(() => {
-    fetchData();
-  }, []);
+ // Fetch initial data
+ useEffect(() => {
+  fetchData();
+}, []);
 
-  //   const handleList = async () => {
-  //   const result = await listCare();
-  //   if (result.success) {
-  //     setAllResults(result.data.cares);
-  //     setFilteredResults(result.data.cares);
-  //     setPagination(result.data.pagination);
-  //   } else {
-  //     console.error('Failed to fetch data:', result.message);
-  //   }
-
-  // };
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/cares/list`);
-      const result = await response.json();
-      
-      if (result.success) {
-        setAllResults(result.data.cares);
-        setFilteredResults(result.data.cares);
-        setPagination(result.data.pagination);
-      } else {
-        console.error('Failed to fetch data:', result.message);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setIsLoading(false);
+const fetchData = async () => {
+  try {
+    setIsLoading(true);
+    const response = await fetch(`/api/cares/list`);
+    const result = await response.json();
+    
+    if (result.success) {
+      setAllResults(result.data.cares);
+      // Don't set filteredResults here, let the filtering effect handle it
+      setPagination(result.data.pagination);
+    } else {
+      console.error('Failed to fetch data:', result.message);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // Handle URL parameters and filtering
+  useEffect(() => {
+    if (allResults.length === 0) return;
+
+    const location = searchParams.get('location');
+    const type = searchParams.get('type');
+    
+    // Create initial filters based on URL parameters
+    const urlFilters = {};
+    if (location) {
+      urlFilters.selectedLocation = location;
+    }
+    if (type) {
+      urlFilters.service = CATEGORY_MAP[type] || type.toLowerCase().replace(/\s+/g, '');
+    }
+
+    // Set filters from URL parameters
+    if (Object.keys(urlFilters).length > 0) {
+      setFilters(urlFilters);
+    }
+
+    // Apply filtering
+    let filtered = [...allResults];
+    
+    if (location) {
+      filtered = filtered.filter(item => 
+        item.location?.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+    
+    if (type) {
+      filtered = filtered.filter(item => {
+        const itemCategory = item.category?.toLowerCase();
+        const searchType = type.toLowerCase();
+        
+        // Check for direct match first
+        if (itemCategory === searchType) return true;
+        
+        // Check for mapped values
+        const mappedType = CATEGORY_MAP[type]?.toLowerCase();
+        if (mappedType && itemCategory === mappedType) return true;
+        
+        // Check for partial matches
+        return itemCategory?.includes(searchType.replace(/\s+/g, ''));
+      });
+    }
+    
+    setFilteredResults(filtered);
+  }, [searchParams, allResults]);
 
   // Combined search and filter function
   const applySearchAndFilters = (currentSearchTerm = searchTerm, currentFilters = filters) => {
     let results = [...allResults];
+
+    // Apply URL parameters first
+    const location = searchParams.get('location');
+    const type = searchParams.get('type');
+
+    if (location) {
+      results = results.filter(item => 
+        item.location?.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    if (type) {
+      const searchType = type.toLowerCase();
+      const mappedType = CATEGORY_MAP[type]?.toLowerCase();
+      
+      results = results.filter(item => {
+        const itemCategory = item.category?.toLowerCase();
+        return itemCategory === searchType || 
+               (mappedType && itemCategory === mappedType) ||
+               itemCategory?.includes(searchType.replace(/\s+/g, ''));
+      });
+    }
 
     // Apply search term
     if (currentSearchTerm.trim()) {
@@ -201,7 +271,7 @@ export default function SearchPage() {
     if (Object.keys(currentFilters).length > 0) {
       results = results.filter(item => {
         // Service Type Filter
-        if (currentFilters.service && item.category !== currentFilters.service) {
+        if (currentFilters.service && item.category?.toLowerCase() !== currentFilters.service.toLowerCase()) {
           return false;
         }
 
@@ -272,14 +342,6 @@ export default function SearchPage() {
       {/* Search Section */}
       <div className="bg-[#FCF1E8] py-4 mt-20">
         <div className="max-w-7xl mx-auto px-4">
-          {/* <div className="mb-8 text-center">
-            <h1 className="text-[#5A3E2B] text-1xl md:text-4xl font-bold mb-4">
-              Find Your Perfect Care Provider
-            </h1>
-            <p className="text-[#8C746A] text-lg">
-              Search through thousands of qualified professionals
-            </p>
-          </div> */}
           <SearchBar onSearch={handleSearch} />
         </div>
       </div>

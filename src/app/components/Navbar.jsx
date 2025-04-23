@@ -12,6 +12,9 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [error, setError] = useState(null);
+  const [showCareTypes, setShowCareTypes] = useState(false);
+  const careTypesRef = useRef(null);
+
   
   const router = useRouter();
   const pathname = usePathname();
@@ -53,6 +56,30 @@ export default function Navbar() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const careTypes = [
+    "Tutoring",
+    "Child Care",
+    "Meal Service",
+    "Mental and Physical Health"
+  ];
+
+    // Handle click outside of care types dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (careTypesRef.current && !careTypesRef.current.contains(event.target)) {
+        setShowCareTypes(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCareTypeSelect = (type) => {
+    setShowCareTypes(false);
+    router.push(`/search?type=${encodeURIComponent(type)}`);
   };
 
   // Handle logout
@@ -139,6 +166,8 @@ export default function Navbar() {
       }`}
     >
       <div className="flex py-4 justify-between pl-3 pr-4 max-w-7xl md:px-10 lg:px-14 xl:px-20 w-full items-center">
+    {/* // <nav className={`fixed w-full z-50 bg-white ${isScrolled ? "shadow-md" : ""}`}>
+    //   <div className="flex justify-between items-center py-4 px-6 max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20"> */}
         {/* Logo */}
         <div className="flex items-center">
           <img
@@ -150,8 +179,7 @@ export default function Navbar() {
         </div>
 
         {/* Navigation Links */}
-        <div>
-          <ul className="hidden md:flex items-center gap-[35px] text-[14px] cursor-pointer">
+        <div className="hidden md:flex items-center gap-8">
             <Link href="/" className="hover:text-[#EF5744]">
               Home
             </Link>
@@ -161,7 +189,7 @@ export default function Navbar() {
             <Link href="/about" className="hover:text-[#EF5744]">
               About us
             </Link>
-            <div className="relative">
+            {/* <div className="relative">
               <div
                 onMouseEnter={() => setShowDropdown(true)}
                 onMouseLeave={() => setShowDropdown(false)}
@@ -187,7 +215,45 @@ export default function Navbar() {
               </div>
             </div>
           </ul>
-        </div>
+        </div> */}
+         <div className="relative" ref={careTypesRef}>
+            <button
+              className="text-[15px] font-[500] flex items-center gap-1"
+              onClick={() => setShowCareTypes(!showCareTypes)}
+            >
+              Types of Cares
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  showCareTypes ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            
+            {showCareTypes && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                {careTypes.map((type, index) => (
+                  <button
+                    key={index}
+                    className="w-full text-left px-4 py-2 text-[14px] hover:bg-gray-100"
+                    onClick={() => handleCareTypeSelect(type)}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          </div>
 
         {/* Auth Section */}
         <div className="hidden md:flex items-center gap-[26px]">
@@ -264,5 +330,6 @@ export default function Navbar() {
         </div>
       )}
     </div>
+
   );
 }
