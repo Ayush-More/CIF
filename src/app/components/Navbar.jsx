@@ -39,6 +39,7 @@ export default function Navbar() {
       if (response.ok && data.authenticated) {
         setIsAuthenticated(true);
         setUserInfo(data.user);
+        
       } else {
         setIsAuthenticated(false);
         setUserInfo(null);
@@ -57,7 +58,7 @@ export default function Navbar() {
       setLoading(false);
     }
   };
-
+  console.log(userInfo , 222222)
   const careTypes = [
     "Tutoring",
     "Child Care",
@@ -276,7 +277,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);
-                      router.push('/profile');
+                      router.push(`/profile/NavProfile/${userInfo.id}`);
                     }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   >
