@@ -191,7 +191,7 @@ export default function Navbar() {
             <Link href="/about" className="hover:text-[#EF5744]">
               About us
             </Link>
-            <Link href="/chat" className="hover:text-[#EF5744]">
+            <Link href="/chat-page" className="hover:text-[#EF5744]">
               Chat
             </Link>
          <div className="relative" ref={careTypesRef}>
