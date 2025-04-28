@@ -18,7 +18,7 @@ const navbarData = [
       "Mental and Physical Health",
     ],
   },
-  { name: "Blogs", link: "/" },
+  { name: "Chat", link: "/chat" },
 ];
 
 export default function Sidebar() {

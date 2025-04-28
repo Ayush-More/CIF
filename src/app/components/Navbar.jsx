@@ -1,15 +1,16 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef , useContext } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { UserCircle2 } from "lucide-react";
+import { AppContext } from "../context/AppContext";
 
 export default function Navbar() {
+  const { isOpen, setIsOpen } = useContext(AppContext);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [error, setError] = useState(null);
   const [showCareTypes, setShowCareTypes] = useState(false);
@@ -190,33 +191,9 @@ export default function Navbar() {
             <Link href="/about" className="hover:text-[#EF5744]">
               About us
             </Link>
-            {/* <div className="relative">
-              <div
-                onMouseEnter={() => setShowDropdown(true)}
-                onMouseLeave={() => setShowDropdown(false)}
-                className="hover:text-[#EF5744]"
-              >
-                Type of Cares
-                {showDropdown && (
-                  <div className="absolute top-full left-0 bg-white shadow-md rounded-md py-2 min-w-[200px]">
-                    <Link href="/services/meal-service" className="block px-4 py-2 hover:bg-gray-100">
-                      Meal Service
-                    </Link>
-                    <Link href="/services/child-care" className="block px-4 py-2 hover:bg-gray-100">
-                      Child Care
-                    </Link>
-                    <Link href="/services/physical-service" className="block px-4 py-2 hover:bg-gray-100">
-                      Physical Service
-                    </Link>
-                    <Link href="/services/tutoring" className="block px-4 py-2 hover:bg-gray-100">
-                      Tutoring
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </ul>
-        </div> */}
+            <Link href="/chat" className="hover:text-[#EF5744]">
+              Chat
+            </Link>
          <div className="relative" ref={careTypesRef}>
             <button
               className="text-[15px] font-[500] flex items-center gap-1"
@@ -315,7 +292,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <div
-          onClick={() => setIsOpen(true)}
+           onClick={() => setIsOpen(!isOpen)} // Toggle Navbar visibility
           className="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
         >
           <span className="block h-[3px] w-5 bg-[#000]"></span>

@@ -21,13 +21,11 @@ export default function Footer() {
               <li>Listings</li>
               <li>Treatment</li>
               <li>Tutorials</li>
-              <li>Blogs</li>
             </ul>
           </div>
           <div>
             <span className="text-[#FFFFFF99] text-[13px]">Locations</span>
             <ul className="text-[#fff] text-[14px] flex flex-col gap-[13px] mt-[13px] cursor-pointer">
-              <li>Blogs</li>
               <li>Newsletter</li>
               <li>Events</li>
               <li>Help center</li>

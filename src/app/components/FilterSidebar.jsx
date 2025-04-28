@@ -7,7 +7,7 @@ export default function FilterSidebar({ onFilter, onClearFilters, isMobileOpen, 
     selectedLocation: '',
     availableOn: [],
     hourlyRate: 10, // Start with minimum value
-    mealRate: 10,   // Add mealRate for meal service
+    mealRate: 10, // Add mealRate for meal service
     overNightCare: false,
     schoolDropOff: false,
     monthlySubscription: false,
