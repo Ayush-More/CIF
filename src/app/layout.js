@@ -1,7 +1,6 @@
 
 import { Geist, Geist_Mono, Inter, Merriweather } from "next/font/google";
 import "./globals.css";
-import { ChatProvider } from './context/ChatContext';
 import { AppProvider } from "./context/AppContext.js";
 import FindJobProvider from "./context/FindJob";
 import { CareFormProvider } from './context/CareFormContext';
@@ -44,11 +43,9 @@ export default function RootLayout({ children }) {
         <FindJobProvider>
           <AppProvider>
             <SidebarMobile/>
-            <ChatProvider>
             <AuthProvider>
             {children}
             </AuthProvider>
-            </ChatProvider>
             </AppProvider>
         </FindJobProvider>
         </CareFormProvider>

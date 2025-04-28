@@ -34,33 +34,6 @@ export default function Profile() {
   const params = useParams(); 
   const userId = params.user;
 
-  const handleContactNow = async () => {
-    setIsLoading(true);
-
-    try {
-      // Check or create a conversation
-      const response = await fetch('/api/conversations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientId: userId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to initiate conversation');
-      }
-
-      const { conversationId } = await response.json();
-
-      // Navigate to the chat page with the conversation ID
-      router.push(`/chat/${conversationId}`);
-    } catch (error) {
-      console.error('Error initiating chat:', error);
-      alert('Failed to contact. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleList = async() => {
     try {
       const result = await listCareProfile(userId);
