@@ -4,8 +4,10 @@ import Care from './../../../../lib/models/Care';
 import { Types } from 'mongoose';
 
 interface ChatProfileResponse {
+    user_id?: string;
     username?: string;
     profilePic?: string;
+    category?: string;
     location?: string;
     total_reviews: number;
     average_rating: number;
@@ -38,8 +40,10 @@ export async function POST(req: NextRequest) {
         const care = await Care.findOne(
             { user_id: new Types.ObjectId(user_id) },
             {
+                user_id: 1,
                 username: 1,
                 profilePic: 1,
+                category: 1,
                 location: 1,
                 total_reviews: 1,
                 average_rating: 1,
@@ -61,9 +65,11 @@ export async function POST(req: NextRequest) {
         // const lastSeenStatus = await LastSeen.findOne({ user_id });
 
         const chatProfile: ChatProfileResponse = {
+            user_id: care.user_id || "",
             username: care.username || "Anonymous User",
             profilePic: care.profilePic || "https://cdn-icons-png.flaticon.com/512/1808/1808546.png",
             location: care.location || "Mumbai",
+            category: care.category || "Child Care",
             total_reviews: care.total_reviews || 0,
             average_rating: care.average_rating || 5,
             about: care.about || "",

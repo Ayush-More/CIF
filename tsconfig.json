@@ -33,7 +33,8 @@
     "src/app/care/enrollment/[careType]/page.jsx",
     "src/app/care/enrollment/[careType]/personal-details/page.jsx",
     "src/app/profile/[user]/page.tsx",
-    "src/app/components/ReviewSection.jsx"
+    "src/app/components/ReviewSection.jsx",
+    "src/app/services/chat.js"
   ],
   "exclude": [
     "node_modules"
