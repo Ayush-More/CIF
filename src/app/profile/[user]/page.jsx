@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from 'next/navigation';
+import { ToastContainer, toast } from 'react-toastify';
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import ProfileAbout from "../../components/ProfileAbout";
@@ -10,25 +11,10 @@ import ProfileOthers from "../../components/ProfileOthers";
 import ProfileReview from "../../components/ProfileReview";
 import ReviewSection from "../../components/ReviewSection";
 import { listCareProfile } from "./../../services/auth";
-
-
-// async function getCareData(id) {
-//   try {
-//       await connectToDatabase();
-//       const care = await Care.findById(id);
-      
-//       if (!care) {
-//           return null;
-//       }
-      
-//       return JSON.parse(JSON.stringify(care));
-//   } catch (error) {
-//       console.error('Error fetching care data:', error);
-//       return null;
-//   }
-// }
+import { useRouter} from "next/navigation";
 
 export default function Profile() {
+  const router = useRouter();
   const [cardData, setCardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const params = useParams(); 
@@ -44,6 +30,42 @@ export default function Profile() {
       setLoading(false);
     }
   }
+
+  const createChatRoom = async () => {
+    const Id = localStorage.getItem('userId');
+    if (!Id) {
+        toast.error("Please login to chat");
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        const response = await fetch(`/api/chat/create-chat-room`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                to: userId,
+                from: Id,
+            }),
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+            router.push(`/chat-page?roomID=${responseData.roomID}`);
+        } else {
+            throw new Error(responseData.message || "Failed to create chat room");
+        }
+    } catch (error) {
+        console.error('Chat Room Error:', error);
+        toast.error(error.message || "Error creating chat room");
+    } finally {
+        setLoading(false);
+    }
+};
 
   useEffect(() => {
     handleList();
@@ -82,7 +104,7 @@ export default function Profile() {
               <p className="text-[12px] text-[#475467]">
                 Connect with {cardData?.data?.username || "Care Provider"} by calling their admissions team directly.
               </p>
-              <button className="bg-[#EF5744] flex text-[#fff] rounded-full px-[14px] py-[6px] items-center gap-2 w-full mt-3">
+              <button onClick={() =>createChatRoom()} className="bg-[#EF5744] flex text-[#fff] rounded-full px-[14px] py-[6px] items-center gap-2 w-full mt-3">
                 <img src="/Icons/phone.svg" alt="" className="h-4" />
                 Contact Now
               </button>

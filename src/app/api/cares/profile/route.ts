@@ -31,7 +31,6 @@ export async function GET(req: NextRequest) {
             average_rating: careProfile.average_rating || 3,
             total_reviews: careProfile.total_reviews || 0
         };
-        console.log(formattedProfile, 11111)
 
         return NextResponse.json({
             message: 'Profile retrieved successfully',

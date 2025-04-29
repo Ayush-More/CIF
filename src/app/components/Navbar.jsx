@@ -40,7 +40,8 @@ export default function Navbar() {
       if (response.ok && data.authenticated) {
         setIsAuthenticated(true);
         setUserInfo(data.user);
-        
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('email', data.user.email);
       } else {
         setIsAuthenticated(false);
         setUserInfo(null);
