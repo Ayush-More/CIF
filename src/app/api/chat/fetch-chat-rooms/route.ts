@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
                         return {
                             user_id: userId,
                             profilePic: userCare?.profilePic || "https://cdn-icons-png.flaticon.com/512/1808/1808546.png",
-                            name: userCare?.username || userId,
+                            name: userCare?.username || "User",
                         };
                     })
                 );

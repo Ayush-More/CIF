@@ -179,7 +179,7 @@ export default function PersonalDetails() {
           position: "top-right",
           autoClose: 2000
         });
-        router.push("/login");
+        router.push("/");
       } else {
         toast.error(data.message || 'Failed to submit form', {
           position: "top-right",

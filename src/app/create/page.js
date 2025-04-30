@@ -14,7 +14,7 @@ export default function Create() {
 
   const handleNextClick = () => {
     if (selectedBanner === "caregiver") {
-      router.push("/login");
+      router.push("/");
     } else if (selectedBanner === "carejob") {
       router.push("/care/enrollment/care-type");
     }

@@ -19,6 +19,8 @@ export default function ReviewSection({
     const [hover, setHover] = useState(0);
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const userId = localStorage.getItem('userId');
+    console.log(userId , 7777);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,7 +36,7 @@ export default function ReviewSection({
 
         setIsSubmitting(true);
         setError('');
-
+       
         try {
             const response = await fetch('/api/reviews', {
                 method: 'POST',
@@ -43,7 +45,7 @@ export default function ReviewSection({
                 },
                 body: JSON.stringify({
                     careId,
-                    userId: session.user.id,
+                    userId,
                     rating,
                     comment,
                     username: session.user.name

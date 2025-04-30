@@ -237,17 +237,26 @@ export default function Navbar() {
         {/* Auth Section */}
         <div className="hidden md:flex items-center gap-[26px]">
           {loading ? (
-            <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+            <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse" />
           ) : isAuthenticated && userInfo ? (
             <div className="relative" ref={profileMenuRef}>
               <div
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                <UserCircle2
-                  size={32}
-                  className="text-[#EF5744]"
-                />
+                 <div className="w-full h-full rounded-full bg-gradient-to-br from-[#EF5744] to-[#FF8066] p-[2px] transition-all duration-300 transform group-hover:rotate-12">
+                                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                                        <svg 
+                                    viewBox="0 0 24 24" 
+                                    width="30" 
+                                    height="30" 
+                                    fill="#EF5744" // Using your website's theme color
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                                  </svg>
+                                        </div>
+                                    </div>
               </div>
               
               {showProfileMenu && (

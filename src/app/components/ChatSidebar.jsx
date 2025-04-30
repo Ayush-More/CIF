@@ -209,7 +209,7 @@ const ChatSidebar = ({ selectedChat, setSelectedChat, currentUserId }) => {
                                 </div>
                                 <div className="ml-4 flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-semibold text-gray-800">{otherUser.name}</h3>
+                                        <h3 className="font-semibold text-gray-800">{otherUser.name || "User" }</h3>
                                         <span className="text-xs text-gray-500">
                                             {formatTime(room.updatedAt)}
                                         </span>

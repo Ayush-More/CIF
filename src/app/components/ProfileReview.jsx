@@ -49,6 +49,8 @@ export default function ProfileReview({ careId }) {
       fetchReviews()
     }
   }, [careId])
+  const userId = localStorage.getItem('userId');
+  console.log(userId , 7777);
 
   const handleAddReview = async () => {
     if (!comment.trim()) {
@@ -60,7 +62,7 @@ export default function ProfileReview({ careId }) {
     try {
       const response = await createReview({
         care_id: careId,
-        user_id: userData?.userId,
+        user_id: userId,
         rating: rating,
         comment: comment,
       })
