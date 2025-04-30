@@ -6,8 +6,7 @@ import FindJobProvider from "./context/FindJob";
 import { CareFormProvider } from './context/CareFormContext';
 import { AuthProvider } from './context/AuthContext';
 import SidebarMobile from "./components/SidebarMobile"
-
-
+import { SocketProvider } from './context/SocketContext';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -43,9 +42,11 @@ export default function RootLayout({ children }) {
         <FindJobProvider>
           <AppProvider>
             <SidebarMobile/>
+            <SocketProvider>
             <AuthProvider>
             {children}
             </AuthProvider>
+            </SocketProvider>
             </AppProvider>
         </FindJobProvider>
         </CareFormProvider>

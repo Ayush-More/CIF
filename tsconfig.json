@@ -34,7 +34,9 @@
     "src/app/care/enrollment/[careType]/personal-details/page.jsx",
     "src/app/profile/[user]/page.tsx",
     "src/app/components/ReviewSection.jsx",
-    "src/app/services/chat.js"
+    "src/app/services/chat.js",
+    "src/lib/socket.js",
+    "server.js"
   ],
   "exclude": [
     "node_modules"

@@ -116,6 +116,7 @@ import { fetchChatRooms, handleChatOperation , fetchChatProfile } from './../ser
 import MeetingDialog from './MeetingDialog';
 import ProfileDialog from './ProfileDialog';
 import MeetingMessage from "./MeetingMessage";
+import { useSocket } from './../context/SocketContext';
 
 const ChatMain = ({ selectedChat, currentUserId }) => {
     const [message, setMessage] = useState('');
@@ -127,6 +128,11 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
     const [chatProfile, setChatProfile] = useState(null);
     const [loadingProfile, setLoadingProfile] = useState(false);
     const messagesEndRef = useRef(null);
+    const [inputMessage, setInputMessage] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [typingUsers, setTypingUsers] = useState(new Set());
+    const typingTimeoutRef = useRef(null);
+    const { socket, isConnected } = useSocket();
 
     const fetchProfile = async (userId) => {
         if (!userId) return;
@@ -144,7 +150,51 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
     };
 
    // Update handleMeetingCreated function
-   const handleMeetingCreated = async (meetingData) => {
+//    const handleMeetingCreated = async (meetingData) => {
+//     try {
+//         // Create the meeting message object
+//         const meetingMessage = {
+//             type: 'meeting',
+//             data: {
+//                 title: meetingData.title,
+//                 scheduledDate: meetingData.scheduledDate,
+//                 joinUrl: meetingData.joinUrl,
+//                 timezone: meetingData.timezone
+//             }
+//         };
+
+//         // Create the chat message
+//         const newMessage = {
+//             id: Date.now().toString(),
+//             message: JSON.stringify(meetingMessage),
+//             sender: currentUserId,
+//             created_at: new Date().toISOString(),
+//             type: 'meeting'
+//         };
+
+//         // Add to messages state
+//         setMessages(prev => [...prev, newMessage]);
+
+//         // Save to backend
+//         await handleChatOperation('saveChat', {
+//             room_id: selectedChat,
+//             message: JSON.stringify(meetingMessage),
+//             sender: currentUserId,
+//             type: 'meeting'
+//         });
+
+//     } catch (error) {
+//         console.error('Error creating meeting message:', error);
+//         toast.error('Failed to send meeting message');
+//     }
+// };
+
+const handleMeetingCreated = async (meetingData) => {
+    if (!socket || !isConnected || !selectedChat) {
+        toast.error('Connection issue. Please try again.');
+        return;
+    }
+
     try {
         // Create the meeting message object
         const meetingMessage = {
@@ -157,29 +207,18 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
             }
         };
 
-        // Create the chat message
-        const newMessage = {
-            id: Date.now().toString(),
+        // Send through socket
+        socket.emit('send_message', {
+            roomId: selectedChat,
             message: JSON.stringify(meetingMessage),
             sender: currentUserId,
-            created_at: new Date().toISOString(),
-            type: 'meeting'
-        };
-
-        // Add to messages state
-        setMessages(prev => [...prev, newMessage]);
-
-        // Save to backend
-        await handleChatOperation('saveChat', {
-            room_id: selectedChat,
-            message: JSON.stringify(meetingMessage),
-            sender: currentUserId,
+            sender_name: localStorage.getItem('username'),
             type: 'meeting'
         });
 
     } catch (error) {
-        console.error('Error creating meeting message:', error);
-        toast.error('Failed to send meeting message');
+        console.error('Error sending meeting message:', error);
+        toast.error('Failed to send meeting invitation');
     }
 };
 
@@ -253,6 +292,80 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
+        if (socket && selectedChat) {
+            // Join chat room
+            socket.emit('join_room', selectedChat);
+
+            // Listen for new messages
+            const handleNewMessage = (message) => {
+                setMessages(prev => [...prev, message]);
+            };
+
+            // Listen for typing indicators
+            const handleTyping = ({ userId, username }) => {
+                if (userId !== currentUserId) {
+                    setTypingUsers(prev => new Set([...prev, username]));
+                }
+            };
+
+            const handleStopTyping = ({ userId }) => {
+                if (userId !== currentUserId) {
+                    setTypingUsers(prev => {
+                        const newSet = new Set(prev);
+                        newSet.delete(userId);
+                        return newSet;
+                    });
+                }
+            };
+
+            // Add event listeners
+            socket.on('receive_message', handleNewMessage);
+            socket.on('user_typing', handleTyping);
+            socket.on('user_stop_typing', handleStopTyping);
+
+            // Cleanup
+            return () => {
+                socket.emit('leave_room', selectedChat);
+                socket.off('receive_message', handleNewMessage);
+                socket.off('user_typing', handleTyping);
+                socket.off('user_stop_typing', handleStopTyping);
+            };
+        }
+    }, [socket, selectedChat, currentUserId]);
+
+    const handleTyping = () => {
+        if (!socket || !isConnected || !selectedChat) return;
+
+        if (!isTyping) {
+            setIsTyping(true);
+            socket.emit('typing', {
+                roomId: selectedChat,
+                userId: currentUserId,
+                username: localStorage.getItem('username')
+            });
+        }
+
+        // Clear existing timeout
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Set new timeout
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+            socket.emit('stop_typing', {
+                roomId: selectedChat,
+                userId: currentUserId
+            });
+        }, 2000);
+    };
+
+
 
     const handleProfileClick = async () => {
         if (!chatInfo?.otherUser?.user_id) {
@@ -265,10 +378,6 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
         }
         setIsProfileDialogOpen(true);
     };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     // Fetch chat room details and messages
     useEffect(() => {
@@ -301,8 +410,42 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
         fetchChatDetails();
     }, [selectedChat, currentUserId]);
 
-    const handleSendMessage = async () => {
-        if (!message.trim() || !selectedChat) return;
+    // const handleSendMessage = async () => {
+    //     if (!message.trim() || !selectedChat) return;
+
+    //     try {
+    //         const result = await handleChatOperation('saveChat', {
+    //             roomID: selectedChat,
+    //             message: message.trim(),
+    //             sender: currentUserId
+    //         });
+
+    //         if (result) {
+    //             // Add new message to the list
+    //             const newMessage = {
+    //                 id: result.id,
+    //                 message: message.trim(),
+    //                 sender: currentUserId,
+    //                 created_at: new Date().toISOString(), // Ensure proper date format
+    //                 status: 0
+    //             };
+    //             setMessages(prevMessages => [...prevMessages, newMessage]);
+            
+    //         // Clear the input field
+    //         setMessage('');
+            
+    //         // Force scroll to bottom after adding new message
+    //         setTimeout(scrollToBottom, 100);
+    //             scrollToBottom();
+    //         }
+    //     } catch (error) {
+    //         console.error('Error sending message:', error);
+    //     }
+    // };
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!message.trim() || !socket || !isConnected || !selectedChat) return;
 
         try {
             const result = await handleChatOperation('saveChat', {
@@ -321,16 +464,25 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
                     status: 0
                 };
                 setMessages(prevMessages => [...prevMessages, newMessage]);
-            
-            // Clear the input field
-            setMessage('');
-            
-            // Force scroll to bottom after adding new message
-            setTimeout(scrollToBottom, 100);
-                scrollToBottom();
+                setMessage('');
+            }
+            // Send message through socket
+            socket.emit('send_message', {
+                roomId: selectedChat,
+                message: message.trim(),
+                sender: currentUserId,
+                sender_name: localStorage.getItem('username')
+            });
+
+            // Clear input and typing status
+            setInputMessage('');
+            setIsTyping(false);
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
             }
         } catch (error) {
             console.error('Error sending message:', error);
+            toast.error('Failed to send message');
         }
     };
 

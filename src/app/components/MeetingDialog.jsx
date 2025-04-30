@@ -22,11 +22,56 @@ const MeetingDialog = ({ isOpen, closeDialog, onMeetingCreated }) => {
     const [timezone, setTimezone] = useState('Asia/Kolkata');
     const [loading, setLoading] = useState(false);
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+        
+    //     if (!title || !description || !date || !timezone) {
+    //         toast.error('Please fill in all fields');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     try {
+    //         const response = await fetch('/api/chat/create-meeting', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 title,
+    //                 description,
+    //                 date: date.toISOString().split('T')[0],
+    //                 time: date.toTimeString().split(' ')[0].slice(0, 5),
+    //                 timezone
+    //             }),
+    //         });
+
+    //         const data = await response.json();
+    //         if (data.success) {
+    //             toast.success('Meeting created successfully');
+    //             // Pass meeting data to parent component
+    //             onMeetingCreated({
+    //                 title,
+    //                 scheduledDate: date,
+    //                 joinUrl: data.data.join_url,
+    //                 timezone
+    //             });
+    //             closeDialog();
+    //         } else {
+    //             throw new Error(data.message);
+    //         }
+    //     } catch (error) {
+    //         toast.error(error.message || 'Failed to create meeting');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!title || !description || !date || !timezone) {
-            toast.error('Please fill in all fields');
+        if (!title || !date || !timezone) {
+            toast.error('Please fill in all required fields');
             return;
         }
 
@@ -48,14 +93,15 @@ const MeetingDialog = ({ isOpen, closeDialog, onMeetingCreated }) => {
 
             const data = await response.json();
             if (data.success) {
-                toast.success('Meeting created successfully');
-                // Pass meeting data to parent component
+                // Pass meeting data to chat component
                 onMeetingCreated({
                     title,
-                    scheduledDate: date,
+                    scheduledDate: date.toISOString(),
                     joinUrl: data.data.join_url,
                     timezone
                 });
+                
+                toast.success('Meeting created successfully');
                 closeDialog();
             } else {
                 throw new Error(data.message);
