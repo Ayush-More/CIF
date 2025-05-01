@@ -222,7 +222,8 @@ const MeetingDialog = ({ isOpen, closeDialog, onMeetingCreated }) => {
                                             Cancel
                                         </button>
                                         <button
-                                            type="submit"
+                                            onClick={handleSubmit}
+                                            // type="submit"
                                             disabled={loading}
                                             className="px-4 py-2 text-sm font-medium text-white bg-[#EF5744] rounded-xl hover:bg-[#ef5744dd] transition-colors disabled:opacity-50"
                                         >

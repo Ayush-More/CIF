@@ -207,14 +207,24 @@ const handleMeetingCreated = async (meetingData) => {
             }
         };
 
-        // Send through socket
-        socket.emit('send_message', {
-            roomId: selectedChat,
+        // First save to database
+        const result = await handleChatOperation('saveChat', {
+            roomID: selectedChat,
             message: JSON.stringify(meetingMessage),
-            sender: currentUserId,
-            sender_name: localStorage.getItem('username'),
-            type: 'meeting'
+            sender: currentUserId
         });
+
+        // Then send through socket
+        if (result) {
+            setMessages(prevMessages => [...prevMessages, meetingMessage]);
+            socket.emit('send_message', {
+                roomId: selectedChat,
+                message: JSON.stringify(meetingMessage),
+                sender: currentUserId,
+                sender_name: localStorage.getItem('username'),
+                type: 'meeting'
+            });
+        }
 
     } catch (error) {
         console.error('Error sending meeting message:', error);
