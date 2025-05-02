@@ -5,6 +5,44 @@ import { useRouter } from 'next/navigation'; // Add this import
 
 export default function SearchCard({ data }) {
   const router = useRouter(); // Initialize the router
+
+
+  const handleContactClick = async () => {
+    console.log("contact clicked")
+    const Id = localStorage.getItem('userId');
+    if (!Id) {
+      toast.error("Please login to chat");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/chat/create-chat-room`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: data.user_id,
+          from: Id,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        router.push(`/chat-page?roomID=${responseData.roomID}`);
+      } else {
+        throw new Error(responseData.message || "Failed to create chat room");
+      }
+    } catch (error) {
+      console.error('Chat Room Error:', error);
+      toast.error(error.message || "Error creating chat room");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleCardClick = () => {
     router.push(`profile/${data.user_id}`);
   };
@@ -39,6 +77,7 @@ export default function SearchCard({ data }) {
     }
   };
 
+
   // Get additional highlights based on category
   const getHighlights = () => {
     const highlights = [];
@@ -63,7 +102,7 @@ export default function SearchCard({ data }) {
   const displayRating = data.average_rating || 4.5; // Default to 4.5 if no rating
 
   return (
-    <div className="bg-white rounded-lg w-full flex p-2 flex-col md:flex-row gap-4" onClick={handleCardClick}>
+    <div className="bg-white rounded-lg w-full flex p-2 flex-col md:flex-row gap-4">
       <div className="md:w-[40%] h-[225px]">
         <img
           src={data.profilePic || "/placeholder.jpg"}
@@ -156,11 +195,13 @@ export default function SearchCard({ data }) {
           </div>
         </div>
         <div className="flex gap-[13px] mb-[13px] mt-4 md:mt-0">
-          <button className="cursor-pointer border border-[#EF5744] text-[#EF5744] rounded-full px-[20px] py-[10px] text-[13px]">
+          <button 
+          onClick={handleContactClick} 
+          className="cursor-pointer border border-[#EF5744] text-[#EF5744] rounded-full px-[20px] py-[10px] text-[13px]">
             Contact Us
           </button>
           <button
-            onClick={()=>{handleCardClick()}}
+            onClick={handleCardClick}
             className="cursor-pointer bg-[#EF5744] text-[#fff] rounded-full px-[20px] py-[10px] text-[13px]"
           >
             View Details

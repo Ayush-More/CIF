@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation'; // Add this import
 import FilterSidebar from '../components/FilterSidebar';
 import SearchBar from '../components/SearchBar';
 import SearchCard from '../components/SearchCard';
 import Navbar from '../components/Navbar';
 import { Filter } from 'lucide-react';
+import { toast } from "react-toastify";
 import { useSearchParams } from 'next/navigation';
 
 // Define TypeScript interfaces
@@ -77,6 +79,7 @@ function SearchContent() {
       setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchData();
