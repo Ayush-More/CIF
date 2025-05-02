@@ -147,14 +147,14 @@ export default function LoginContainer() {
         <FcGoogle className="text-[20px]" />
         Login with Google
       </button>
-      <button
-        className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
-        onClick={handleFacebookLogin}
-        disabled={isLoading} // Disable button when loading
-      >
-        <img src="/Icons/facebook.svg" alt="" className="h-5" />
-        Login with Facebook
-      </button>
+      {/* // <button
+      //   className="w-full rounded-md text-[14px] mt-3 py-[8px] cursor-pointer border border-[#0000001A] flex justify-center gap-5 hover:bg-[#F1F5F9]"
+      //   onClick={handleFacebookLogin}
+      //   disabled={isLoading} // Disable button when loading
+      // >
+      //   <img src="/Icons/facebook.svg" alt="" className="h-5" />
+      //   Login with Facebook
+      // </button> */}
       <div className="text-center mt-5 text-[13px]">
         Don't have an account?{" "}
         <span

@@ -154,6 +154,7 @@ export default function PersonalDetails() {
     });
     router.back();
   };
+  const Id = localStorage.getItem('userId');
 
   const handleNextClick = async () => {
     if (!validateForm()) {
@@ -169,6 +170,7 @@ export default function PersonalDetails() {
       about,
       skills,
       profilePic,
+      user_id: Id,
     };
 
     try {

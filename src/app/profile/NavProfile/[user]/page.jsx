@@ -1,16 +1,150 @@
+// "use client";
+// import { useState, useEffect } from "react";
+// import { useParams, useRouter } from 'next/navigation';
+// import Navbar from "./../../../components/Navbar";
+// import Footer from "./../../../components/Footer";
+// import Image from 'next/image';
+
+// export default function UserProfile() {
+//   const [profile, setProfile] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const { user } = useParams(); // Changed from userId to user to match the route parameter
+//   const router = useRouter();
+//   const isOwnProfile = user === 'me' || user === profile?.user_id; // Updated to match your data structure
+
+//   useEffect(() => {
+//     const fetchProfile = async () => {
+//       try {
+//         const response = await fetch(`/api/user/profile?userId=${user}`);
+//         const data = await response.json();
+//         if (data.success) {
+//           setProfile(data.data);
+//         }
+//       } catch (error) {
+//         console.error('Error fetching profile:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchProfile();
+//   }, [user]);
+
+//   const handleCreateProfile = () => {
+//     router.push('/care/enrollment/care-type');
+//   };
+
+//   const handleEditProfile = () => {
+//     router.push(`/care/edit-profile/${profile.careProfile._id}`);
+//   };
+
+//   if (loading) {
+//     return <div className="min-h-screen flex items-center justify-center">
+//       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#EF5744]"></div>
+//     </div>;
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-[#FAFAFA]">
+//       <Navbar />
+      
+//       <main className="container mx-auto px-4 mt-20 py-8">
+//         <div className="bg-white rounded-xl shadow-sm p-6">
+//           {/* Profile Header */}
+//           <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-6">
+//             <div className="flex items-center gap-6">
+//               <div className="relative w-24 h-24 rounded-full overflow-hidden">
+//                 {profile?.careProfile?.profilePic ? (
+//                   <Image
+//                     src={profile.careProfile.profilePic}
+//                     alt={profile.fullName}
+//                     fill
+//                     className="object-cover"
+//                   />
+//                 ) : (
+//                   <div className="w-full h-full bg-[#EF5744] flex items-center justify-center text-white text-2xl">
+//                     {profile?.fullName?.[0]?.toUpperCase()}
+//                   </div>
+//                 )}
+//               </div>
+              
+//               <div>
+//                 <h1 className="text-2xl font-semibold text-gray-900">{profile?.fullName}</h1>
+//                 <p className="text-gray-600">{profile?.email}</p>
+//                 {profile?.careProfile && (
+//                   <div className="mt-2 flex items-center gap-2">
+//                     <span className="bg-[#EF5744] text-white px-3 py-1 rounded-full text-sm">
+//                       {profile.careProfile.category}
+//                     </span>
+//                     <div className="flex items-center gap-1">
+//                       <img src="/Icons/star.svg" alt="rating" className="h-4 w-4" />
+//                       <span className="text-sm text-gray-600">
+//                         {profile.careProfile.average_rating || 0} ({profile.careProfile.total_reviews || 0} reviews)
+//                       </span>
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Profile Action Buttons */}
+//             {isOwnProfile && (
+//               <div className="mt-4 md:mt-0">
+//                 {profile?.careProfile ? (
+//                   <button
+//                     onClick={handleEditProfile}
+//                     className="bg-[#EF5744] text-white px-6 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#d94e3d] transition-colors"
+//                   >
+//                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+//                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+//                     </svg>
+//                     Edit Profile
+//                   </button>
+//                 ) : (
+//                   <button
+//                     onClick={handleCreateProfile}
+//                     className="bg-[#EF5744] text-white px-6 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#d94e3d] transition-colors"
+//                   >
+//                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+//                       <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+//                     </svg>
+//                     Create Care Profile
+//                   </button>
+//                 )}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Profile Content */}
+//           {profile?.careProfile ? (
+//             <CareProviderProfile profile={profile} isOwnProfile={isOwnProfile} />
+//           ) : (
+//             <UserBasicProfile profile={profile} />
+//           )}
+//         </div>
+//       </main>
+
+//       <Footer />
+//     </div>
+//   );
+// }
+
+
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from 'next/navigation';
 import Navbar from "./../../../components/Navbar";
 import Footer from "./../../../components/Footer";
 import Image from 'next/image';
+import { useCareForm } from "./../../../context/CareFormContext";
 
 export default function UserProfile() {
+  const { updateForm } = useCareForm();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useParams(); // Changed from userId to user to match the route parameter
+  const { user } = useParams();
   const router = useRouter();
-  const isOwnProfile = user === 'me' || user === profile?.user_id; // Updated to match your data structure
+  const isOwnProfile = user === 'me' || user === profile?.user_id;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,14 +168,48 @@ export default function UserProfile() {
     router.push('/care/enrollment/care-type');
   };
 
-  const handleEditProfile = () => {
-    router.push(`/care/edit-profile/${profile.careProfile._id}`);
+  // const handleEditProfile = () => {
+  //   if (profile?.careProfile?._id) {
+  //     router.push(`/care/enrollment/care-type?edit=true&id=${profile.careProfile._id}`);
+  //   }
+  // };
+
+  const handleEditProfile = async () => {
+    if (profile?.careProfile?._id) {
+      try {
+        // Fetch care profile data
+        const response = await fetch(`/api/cares/profile?userId=${user}`);
+        const data = await response.json();
+        console.log(data , 777777)
+        if (data.data) {
+          // Update CareFormContext with the fetched data
+          updateForm({
+            ...data.data,
+            user_id: user,
+            // Convert any dates to string format
+            dateOfBirth: data.data.dateOfBirth ? new Date(data.data.dateOfBirth).toISOString().split('T')[0] : '',
+            // Ensure arrays are properly handled
+            workingDays: data.data.workingDays || [],
+            languages: data.data.languages || [],
+            mealTypes: data.data.mealTypes || [],
+          });
+          
+          // Redirect to edit form
+          router.push(`/care/enrollment/care-type?edit=true`);
+        }
+      } catch (error) {
+        console.error('Error fetching care profile:', error);
+      }
+    }
   };
 
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#EF5744]"></div>
-    </div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#EF5744]"></div>
+      </div>
+    );
   }
 
   return (
@@ -71,26 +239,14 @@ export default function UserProfile() {
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">{profile?.fullName}</h1>
                 <p className="text-gray-600">{profile?.email}</p>
-                {profile?.careProfile && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="bg-[#EF5744] text-white px-3 py-1 rounded-full text-sm">
-                      {profile.careProfile.category}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <img src="/Icons/star.svg" alt="rating" className="h-4 w-4" />
-                      <span className="text-sm text-gray-600">
-                        {profile.careProfile.average_rating || 0} ({profile.careProfile.total_reviews || 0} reviews)
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
-            {/* Profile Action Buttons */}
-            {isOwnProfile && (
+            {/* Profile Action Buttons - Only show for own profile */}
+           
               <div className="mt-4 md:mt-0">
                 {profile?.careProfile ? (
+                  // Edit Care Profile Button
                   <button
                     onClick={handleEditProfile}
                     className="bg-[#EF5744] text-white px-6 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#d94e3d] transition-colors"
@@ -98,9 +254,10 @@ export default function UserProfile() {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Edit Profile
+                    Edit Care Profile
                   </button>
                 ) : (
+                  // Create Care Profile Button
                   <button
                     onClick={handleCreateProfile}
                     className="bg-[#EF5744] text-white px-6 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#d94e3d] transition-colors"
@@ -112,7 +269,7 @@ export default function UserProfile() {
                   </button>
                 )}
               </div>
-            )}
+       
           </div>
 
           {/* Profile Content */}
