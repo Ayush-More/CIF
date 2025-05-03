@@ -183,6 +183,11 @@ export default function HeroSection() {
             )}
           </div>
         </div>
+        <div className="md:w-[51%] flex items-center justify-center">
+      <div className="">
+             <img src="/Images/care.png" alt="" />
+           </div>
+         </div>
       </div>
     </div>
   );
