@@ -1,4 +1,5 @@
-import { link } from "fs";
+'use client'
+import { useRouter } from "next/navigation";
 import { FaArrowRight } from "react-icons/fa6";
 
 const bannerData = [
@@ -8,19 +9,20 @@ const bannerData = [
   },
   {
     img: "/Images/cc1.jpeg",
-    title: "Child Care",
+    title: "Child care",
   },
   {
     img: "/Images/mm1.jpeg",
-    title: "Meal Care",
+    title: "Meal Service",
   },
   {
     img: "/Images/Meditation_Image.jpeg",
-    title: "Mental and Phys...",
+    title: "Mental and Physical health",
   },
 ];
 
 export default function ImageSlider() {
+  const router = useRouter();
   return (
     <div className="flex flex-col md:flex-row gap-4 mt-16">
       {bannerData.map((item, i) => {
@@ -39,7 +41,7 @@ export default function ImageSlider() {
                 {item.title}
               </div>
               <div className="w-[31px] h-[31px] cursor-pointer hover:scale-125 transition-transform duration-300 bg-[#fff] rounded-full flex items-center justify-center">
-                <FaArrowRight className="text-[14px]" />
+                <FaArrowRight className="text-[14px]" onClick={() => router.push(`/search?type=${item.title}`)}/>
               </div>
             </div>
           </div>
