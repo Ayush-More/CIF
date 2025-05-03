@@ -168,12 +168,6 @@ export default function UserProfile() {
     router.push('/care/enrollment/care-type');
   };
 
-  // const handleEditProfile = () => {
-  //   if (profile?.careProfile?._id) {
-  //     router.push(`/care/enrollment/care-type?edit=true&id=${profile.careProfile._id}`);
-  //   }
-  // };
-
   const handleEditProfile = async () => {
     if (profile?.careProfile?._id) {
       try {
@@ -335,14 +329,14 @@ function CareProviderProfile({ profile, isOwnProfile }) {
       </section>
 
       {/* Contact Button - Only show for other users viewing the profile */}
-      {!isOwnProfile && (
+      {/* {!isOwnProfile && (
         <div className="mt-8">
           <button className="bg-[#EF5744] text-white px-6 py-3 rounded-full w-full md:w-auto flex items-center justify-center gap-2 hover:bg-[#d94e3d] transition-colors">
             <img src="/Icons/phone.svg" alt="" className="h-4 w-4" />
             Contact Now
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

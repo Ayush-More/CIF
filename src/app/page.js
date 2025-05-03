@@ -17,7 +17,7 @@ export default function Home() {
       {/* <LogoSlider /> */}
       <div className="max-w-7xl px-5 mx-auto md:px-10 lg:px-14 xl:px-20">
         <SeekingCare />
-        <NearCenter />
+        {/* <NearCenter /> */}
       </div>
       <Footer />
     </>

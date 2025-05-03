@@ -1,4 +1,5 @@
 import { useState , useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react'; // Import X icon for close button
 
 export default function FilterSidebar({ onFilter, onClearFilters, isMobileOpen, setIsMobileOpen }) {
@@ -13,6 +14,30 @@ export default function FilterSidebar({ onFilter, onClearFilters, isMobileOpen, 
     monthlySubscription: false,
     trainingMode: ''
   });
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Get location and type from URL parameters
+    const locationParam = searchParams.get('location');
+    const typeParam = searchParams.get('type');
+
+    if (locationParam || typeParam) {
+      // If we have URL parameters, set the initial filters
+      setSelectedService(typeParam?.toLowerCase().replace(' ', '') || '');
+      setFilters(prev => ({
+        ...prev,
+        selectedLocation: locationParam || ''
+      }));
+      
+      // Apply the filters
+      onFilter({
+        ...filters,
+        selectedLocation: locationParam || '',
+        service: typeParam?.toLowerCase().replace(' ', '') || ''
+      });
+    }
+  }, [searchParams]); 
 
     // Close sidebar when clicking outside on mobile
   useEffect(() => {

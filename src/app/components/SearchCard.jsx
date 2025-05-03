@@ -1,21 +1,56 @@
 import { Star } from 'lucide-react'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Add this import
-
+import {toast} from 'react-toastify';
 
 export default function SearchCard({ data }) {
   const router = useRouter(); // Initialize the router
 
+  // const handleContactClick = async () => {
+  //   console.log("contact clicked")
+  //   const Id = localStorage.getItem('userId');
+  //   if (!Id) {
+  //     toast.error("Please login to chat");
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     const response = await fetch(`/api/chat/create-chat-room`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         to: data.user_id,
+  //         from: Id,
+  //       }),
+  //     });
+
+  //     const responseData = await response.json();
+
+  //     if (response.ok) {
+  //       router.push(`/chat-page?roomID=${responseData.roomID}`);
+  //     } else {
+  //       throw new Error(responseData.message || "Failed to create chat room");
+  //     }
+  //   } catch (error) {
+  //     console.error('Chat Room Error:', error);
+  //     toast.error(error.message || "Error creating chat room");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleContactClick = async () => {
-    console.log("contact clicked")
+    console.log("contact clicked");
     const Id = localStorage.getItem('userId');
     if (!Id) {
       toast.error("Please login to chat");
       return;
     }
 
-    setIsLoading(true);
 
     try {
       const response = await fetch(`/api/chat/create-chat-room`, {
@@ -40,9 +75,9 @@ export default function SearchCard({ data }) {
       console.error('Chat Room Error:', error);
       toast.error(error.message || "Error creating chat room");
     } finally {
-      setIsLoading(false);
     }
   };
+
   const handleCardClick = () => {
     router.push(`profile/${data.user_id}`);
   };

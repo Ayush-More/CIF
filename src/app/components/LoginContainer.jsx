@@ -62,7 +62,6 @@ export default function LoginContainer() {
     }
 };
 
-
   const handleGoogleLogin = async () => {
     setIsLoading(true); // Start loader
     await signIn("google", {
@@ -71,17 +70,17 @@ export default function LoginContainer() {
     setIsLoading(false); // Stop loader
   };
 
-  const handleFacebookLogin = () => {
-    toast.info("Will be available soon.....", {
-      position: "bottom-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
+  // const handleFacebookLogin = () => {
+  //   toast.info("Will be available soon.....", {
+  //     position: "bottom-right",
+  //     autoClose: 3000,
+  //     hideProgressBar: false,
+  //     closeOnClick: true,
+  //     pauseOnHover: true,
+  //     draggable: true,
+  //     progress: undefined,
+  //   });
+  // };
 
   return (
     <div className="w-[400px] px-6 py-6 rounded-xl border border-[#0000001A] relative">

@@ -16,8 +16,6 @@ const ChatMain = ({ selectedChat, currentUserId }) => {
     const [chatProfile, setChatProfile] = useState(null);
     const [loadingProfile, setLoadingProfile] = useState(false);
     const messagesEndRef = useRef(null);
-    const [inputMessage, setInputMessage] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
     const [typingUsers, setTypingUsers] = useState(new Set());
     const typingTimeoutRef = useRef(null);
     const { socket, isConnected } = useSocket();
@@ -83,7 +81,9 @@ const handleMeetingCreated = async (meetingData) => {
         toast.error('Failed to send meeting invitation');
     }
 };
-
+const handleInputChange = (e) => {
+    setMessage(e.target.value);
+};
     const renderMessage = (msg) => {
         const isUserMessage = msg.sender === currentUserId;
 
@@ -186,8 +186,53 @@ const handleMeetingCreated = async (meetingData) => {
             socket.emit('join_room', selectedChat);
 
             // Listen for new messages
+            // const handleNewMessage = (message) => {
+            //     setMessages(prev => [...prev, message]);
+            // };
+
             const handleNewMessage = (message) => {
                 setMessages(prev => [...prev, message]);
+                // Only show toast for messages from other users
+                if (message.sender !== currentUserId) {
+                    try {
+                        // Try to parse the message to check if it's a meeting message
+                        const parsedMessage = JSON.parse(message.message);
+                        if (parsedMessage.type === 'meeting') {
+                            toast.info(`${message.sender_name} sent a meeting invitation`, {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                            });
+                        } else {
+                            // Regular message toast
+                            toast.info(`${message.sender_name}: ${message.message.length > 50 
+                                ? message.message.substring(0, 50) + '...' 
+                                : message.message}`, {
+                                position: "top-right",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                            });
+                        }
+                    } catch (e) {
+                        // If parsing fails, it's a regular message
+                        toast.info(`${message.sender_name}: ${message.message.length > 50 
+                            ? message.message.substring(0, 50) + '...' 
+                            : message.message}`, {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                }
             };
 
             // Listen for typing indicators
@@ -221,33 +266,6 @@ const handleMeetingCreated = async (meetingData) => {
             };
         }
     }, [socket, selectedChat, currentUserId]);
-
-    const handleTyping = () => {
-        if (!socket || !isConnected || !selectedChat) return;
-
-        if (!isTyping) {
-            setIsTyping(true);
-            socket.emit('typing', {
-                roomId: selectedChat,
-                userId: currentUserId,
-                username: localStorage.getItem('username')
-            });
-        }
-
-        // Clear existing timeout
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
-
-        // Set new timeout
-        typingTimeoutRef.current = setTimeout(() => {
-            setIsTyping(false);
-            socket.emit('stop_typing', {
-                roomId: selectedChat,
-                userId: currentUserId
-            });
-        }, 2000);
-    };
 
 
 
@@ -377,13 +395,16 @@ const handleMeetingCreated = async (meetingData) => {
                     status: 0
                 };
                 setMessages(prevMessages => [...prevMessages, newMessage]);
-                setMessage('');
-                
-                // Reset textarea height
-                if (textareaRef.current) {
-                    textareaRef.current.style.height = '44px';
-                }
-            }
+                 // Clear the input field
+                 setMessage('');
+                    
+                    // Reset textarea height
+                    if (textareaRef.current) {
+                        textareaRef.current.style.height = '44px';
+                        // Force the textarea to reset its value
+                        textareaRef.current.value = '';
+                    }
+                    }
             
             // Send message through socket
             socket.emit('send_message', {
@@ -392,13 +413,10 @@ const handleMeetingCreated = async (meetingData) => {
                 sender: currentUserId,
                 sender_name: localStorage.getItem('username')
             });
+            setMessage('');
     
             // Clear input and typing status
-            setInputMessage('');
-            setIsTyping(false);
-            if (typingTimeoutRef.current) {
-                clearTimeout(typingTimeoutRef.current);
-            }
+    
         } catch (error) {
             console.error('Error sending message:', error);
             toast.error('Failed to send message');
@@ -507,10 +525,7 @@ const handleMeetingCreated = async (meetingData) => {
                     <textarea
                         ref={textareaRef}
                         value={message}
-                        onChange={(e) => {
-                            setMessage(e.target.value);
-                            handleTyping();
-                        }}
+                        onChange={handleInputChange}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();

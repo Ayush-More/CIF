@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <div className="bg-[#081253] px-6 py-[50px] mt-20">
-      <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
+    <div className="bg-[#081253] px-6 py-[20px] mt-20">
+      {/* <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
         <div className="flex flex-col gap-8 md:gap-0 md:flex-row justify-between">
           <div className="md:w-[25%]">
             <img
@@ -52,8 +52,8 @@ export default function Footer() {
               Find A Care
             </button>
           </div>
-        </div>
-        <div className="flex flex-col md:flex-row mt-8 md:mt-[51px] border-t border-[#ffffff21] pt-[26px] gap-3 items-center md:items-start md:gap-[32px] text-[#fff] text-[14px]">
+        </div> */}
+        <div className="flex flex-col md:flex-row md:mt-[51px] border-t border-[#ffffff21] mb-6  gap-3 items-center md:items-start md:gap-[32px] text-[#fff] text-[14px]">
           <div>© 2024 Company. All rights reserved.</div>
           <div className="flex gap-[19px] cursor-pointer">
             <span>Terms</span>
@@ -61,7 +61,7 @@ export default function Footer() {
             <span>Cookies</span>
           </div>
         </div>
-      </div>
+      {/* </div> */}
     </div>
   );
 }

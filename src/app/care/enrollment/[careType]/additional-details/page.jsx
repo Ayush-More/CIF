@@ -46,63 +46,232 @@ export default function AdditionalDetails() {
   };
 
   // Function to fetch location from zipcode using the postal pincode API
-  const fetchLocationFromZipCode = async (zipCode) => {
-    if (zipCode.length === 6) {
-      setIsLoading(true);
-      setZipCodeError("");
+  // const fetchLocationFromZipCode = async (zipCode) => {
+  //   if (zipCode.length === 6) {
+  //     setIsLoading(true);
+  //     setZipCodeError("");
       
-      try {
-        const response = await fetch(`https://api.postalpincode.in/pincode/${zipCode}`);
-        const data = await response.json();
+  //     try {
+  //       const response = await fetch(`https://api.postalpincode.in/pincode/${zipCode}`);
+  //       const data = await response.json();
         
-        if (data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
-          const postOffice = data[0].PostOffice[0];
-          setLocation(`${postOffice.District}, ${postOffice.State}`);
-          toast.success('Location found successfully!', {
-            position: "top-right",
-            autoClose: 2000
-          });
-        } else {
-          setZipCodeError("Invalid PIN code or no location found");
-          setLocation("");
-          toast.error('Invalid PIN code or no location found', {
-            position: "top-right",
-            autoClose: 3000
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching location data:", error);
-        setZipCodeError("Failed to fetch location. Please check your internet connection and try again.");
-        setLocation("");
-        toast.error('Failed to fetch location. Please try again.', {
-          position: "top-right",
-          autoClose: 3000
-        });
-      } finally {
-        setIsLoading(false);
-      }
+  //       if (data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
+  //         const postOffice = data[0].PostOffice[0];
+  //         setLocation(`${postOffice.District}, ${postOffice.State}`);
+  //         toast.success('Location found successfully!', {
+  //           position: "top-right",
+  //           autoClose: 2000
+  //         });
+  //       } else {
+  //         setZipCodeError("Invalid PIN code or no location found");
+  //         setLocation("");
+  //         toast.error('Invalid PIN code or no location found', {
+  //           position: "top-right",
+  //           autoClose: 3000
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching location data:", error);
+  //       setZipCodeError("Failed to fetch location. Please check your internet connection and try again.");
+  //       setLocation("");
+  //       toast.error('Failed to fetch location. Please try again.', {
+  //         position: "top-right",
+  //         autoClose: 3000
+  //       });
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
+
+  const GEONAMES_USERNAME = 'aditydevx'; // Replace with your GeoNames username
+
+const fetchLocationFromGeoNames = async (postalCode, countryCode) => {
+  try {
+    const response = await fetch(
+      `http://api.geonames.org/postalCodeSearchJSON?postalcode=${postalCode}&country=${countryCode}&maxRows=1&username=${GEONAMES_USERNAME}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch location data');
     }
+
+    const data = await response.json();
+    if (data.postalCodes && data.postalCodes.length > 0) {
+      return {
+        success: true,
+        data: data.postalCodes[0]
+      };
+    }
+    return { success: false, error: 'Location not found' };
+  } catch (error) {
+    console.error('GeoNames API Error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Update the validateZipCode function
+const validateZipCode = (code) => {
+  // Remove spaces and convert to uppercase
+  const formattedCode = code.replace(/\s+/g, '').toUpperCase();
+  
+  // Validation patterns
+  const patterns = {
+    US: /^\d{5}$/, // US ZIP: 12345
+    IN: /^\d{6}$/, // India PIN: 123456
+    CA: /^[A-Z][0-9][A-Z][0-9][A-Z][0-9]$/ // Canadian: A1A1A1
   };
 
+  // Check which format matches
+  for (const [country, pattern] of Object.entries(patterns)) {
+    if (pattern.test(formattedCode)) {
+      return { isValid: true, country, code: formattedCode };
+    }
+  }
+
+  return { isValid: false, country: null, code: formattedCode };
+};
+
+// Update the fetchLocationFromZipCode function
+const fetchLocationFromZipCode = async (zipCode) => {
+  setIsLoading(true);
+  setZipCodeError("");
+
+  try {
+    const { isValid, country, code } = validateZipCode(zipCode.replace(/\s+/g, '').toUpperCase());
+    
+    if (!isValid) {
+      setZipCodeError("Invalid postal code format");
+      setLocation("");
+      toast.error('Invalid postal code format', {
+        position: "top-right",
+        autoClose: 3000
+      });
+      return;
+    }
+
+    // Map country codes for GeoNames API
+    const countryCodeMap = {
+      US: 'US',
+      CA: 'CA',
+      IN: 'IN'
+    };
+
+    const geoNamesResult = await fetchLocationFromGeoNames(code, countryCodeMap[country]);
+
+    if (geoNamesResult.success) {
+      const { placeName, adminName1, countryCode } = geoNamesResult.data;
+      
+      // Format location string based on country
+      let locationString;
+      switch (countryCode) {
+        case 'US':
+          locationString = `${placeName}, ${adminName1}, USA`;
+          break;
+        case 'CA':
+          locationString = `${placeName}, ${adminName1}, Canada`;
+          break;
+        case 'IN':
+          locationString = `${placeName}, ${adminName1}, India`;
+          break;
+        default:
+          locationString = `${placeName}, ${adminName1}`;
+      }
+
+      setLocation(locationString);
+      toast.success('Location found successfully!', {
+        position: "top-right",
+        autoClose: 2000
+      });
+    } else {
+      throw new Error(geoNamesResult.error || "Location not found");
+    }
+
+  } catch (error) {
+    console.error("Error fetching location data:", error);
+    setZipCodeError(error.message || "Failed to fetch location. Please check your postal code and try again.");
+    setLocation("");
+    toast.error(error.message || 'Failed to fetch location. Please try again.', {
+      position: "top-right",
+      autoClose: 3000
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Update the handleZipCodeChange function
+const handleZipCodeChange = (e) => {
+  let value = e.target.value.toUpperCase();
+  
+  // Remove any existing formatting
+  const unformatted = value.replace(/[\s-]/g, '');
+  
+  // Handle different postal code formats
+  if (/^\d+$/.test(unformatted)) {
+    // US ZIP or Indian PIN
+    if (unformatted.length <= 6) {
+      setZipCode(unformatted);
+    }
+  } else if (/^[A-Z0-9]*$/.test(unformatted)) {
+    // Canadian postal code
+    if (unformatted.length <= 6) {
+      // Format as 'A1A 1A1'
+      const formatted = unformatted
+        .replace(/([A-Z]\d[A-Z])(\d[A-Z]\d)/, '$1 $2')
+        .slice(0, 7);
+      setZipCode(formatted);
+    }
+  }
+};
   const handleIncrement = () => setCareFor((prev) => prev + 1);
   const handleDecrement = () => setCareFor((prev) => Math.max(prev - 1, 0));
-
-  useEffect(() => {
-    if (zipCode.length === 6) {
-      fetchLocationFromZipCode(zipCode);
+  // Update the useEffect hook
+useEffect(() => {
+  const timer = setTimeout(() => {
+    const unformatted = zipCode.replace(/[\s-]/g, '');
+    
+    // Check if we have a complete postal code
+    if (
+      (unformatted.length === 5 && /^\d+$/.test(unformatted)) ||
+      (unformatted.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(unformatted)) ||
+      (unformatted.length === 6 && /^\d{6}$/.test(unformatted)) 
+    ) {
+      fetchLocationFromZipCode(unformatted);
     }
-  }, [zipCode]);
+  }, 500);
 
+  return () => clearTimeout(timer);
+}, [zipCode]);
+
+  // useEffect(() => {
+  //   if (zipCode.length === 6) {
+  //     fetchLocationFromZipCode(zipCode);
+  //   }
+  // }, [zipCode]);
+
+  // const validateForm = () => {
+  //   const errors = [];
+
+  //   // Common fields validation
+  //   if (!zipCode || zipCode.length !== 6) {
+  //     errors.push("Please enter a valid 6-digit ZIP code");
+  //   }
+
+  //   if (!location) {
+  //     errors.push("Location is required");
+  //   }
   const validateForm = () => {
     const errors = [];
-
-    // Common fields validation
-    if (!zipCode || zipCode.length !== 6) {
-      errors.push("Please enter a valid 6-digit ZIP code");
-    }
-
-    if (!location) {
-      errors.push("Location is required");
+  
+    // ZIP code validation
+    if (!zipCode) {
+      errors.push("Please enter a postal code");
+    } else {
+      const { isValid } = validateZipCode(zipCode);
+      if (!isValid) {
+        errors.push("Please enter a valid postal code");
+      }
     }
 
     const experienceWords = countWords(experience);
@@ -276,7 +445,7 @@ export default function AdditionalDetails() {
           <div className="mt-10 flex flex-col gap-8">
             {/* Common fields for all care types */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <p className="text-[15px] font-[500]">Zip Code</p>
                 <input
                   type="text"
@@ -286,6 +455,23 @@ export default function AdditionalDetails() {
                   onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
                 />
+                {zipCodeError && (
+                  <p className="text-red-500 text-[12px] ml-2">{zipCodeError}</p>
+                )}
+              </div> */}
+              <div className="space-y-2">
+                <p className="text-[15px] font-[500]">Postal Code</p>
+                <input
+                  type="text"
+                  className="border text-[13px] px-4 py-2 rounded-lg w-full"
+                  placeholder="Enter postal code"
+                  value={zipCode}
+                  onChange={handleZipCodeChange}
+                  maxLength={7} // For Canadian format with space
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Accepts: US (12345), Canada (A1A 1A1), India (123456)
+                </p>
                 {zipCodeError && (
                   <p className="text-red-500 text-[12px] ml-2">{zipCodeError}</p>
                 )}
