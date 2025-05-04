@@ -65,7 +65,7 @@ const authOptions = {
             return session;
         },
     },
-
+    site: 'https://careforindians.com',
     secret: process.env.NEXTAUTH_SECRET,
 };
 
