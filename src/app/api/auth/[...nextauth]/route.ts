@@ -18,50 +18,113 @@ const authOptions = {
     ],
 
     callbacks: {
+        // async signIn({ user, account, profile }) {
+        //     await connectToDatabase();
+
+        //     let existingUser = await User.findOne({ email: profile.email });
+
+        //     if (!existingUser) {
+        //         existingUser = await User.create({
+        //             fullName: profile.name,
+        //             email: profile.email,
+        //             verified: true,
+        //             [`${account.provider}Id`]: profile.id || profile.sub,
+        //         });
+        //     }
+
+        //     // Create custom JWT
+        //     const token = jwt.sign(
+        //         { userId: existingUser._id, email: existingUser.email },
+        //         process.env.JWT_SECRET!,
+        //         { expiresIn: '7d' }
+        //     );
+
+        //     // Store token in the account object for use in the redirect callback
+        //     account.token = token;
+
+        //     return true;
+        // },
+
+        // async redirect({ url, baseUrl, account }) {
+        //     if (account?.token) {
+        //         return `${baseUrl}/api/auth/set-cookie?token=${account.token}`;
+        //     }
+        //     return url.startsWith("/") ? `${baseUrl}${url}` : url;
+        // },
+
+        // async jwt({ token, user }) {
+        //     if (user) {
+        //         token.id = user.id || user._id; // Ensure user ID is set correctly
+        //         token.email = user.email;
+        //     }
+        //     return token;
+        // },
+
+        // async session({ session, token }) {
+        //     session.user.id = token.id;
+        //     return session;
+        // },
         async signIn({ user, account, profile }) {
-            await connectToDatabase();
+            try {
+                await connectToDatabase();
 
-            let existingUser = await User.findOne({ email: profile.email });
+                // Find or create user
+                let existingUser = await User.findOne({ email: profile.email });
+                if (!existingUser) {
+                    existingUser = await User.create({
+                        fullName: profile.name,
+                        email: profile.email,
+                        verified: true,
+                        [`${account.provider}Id`]: profile.sub, // Changed from profile.id to profile.sub for Google
+                    });
+                }
 
-            if (!existingUser) {
-                existingUser = await User.create({
-                    fullName: profile.name,
-                    email: profile.email,
-                    verified: true,
-                    [`${account.provider}Id`]: profile.id || profile.sub,
-                });
+                // Create JWT token
+                const token = jwt.sign(
+                    {
+                        userId: existingUser._id,
+                        email: existingUser.email,
+                        name: existingUser.fullName
+                    },
+                    process.env.JWT_SECRET!,
+                    { expiresIn: '7d' }
+                );
+
+                // Store token for use in redirect callback
+                account.token = token;
+                return true;
+            } catch (error) {
+                console.error("Sign in error:", error);
+                return false;
             }
-
-            // Create custom JWT
-            const token = jwt.sign(
-                { userId: existingUser._id, email: existingUser.email },
-                process.env.JWT_SECRET!,
-                { expiresIn: '7d' }
-            );
-
-            // Store token in the account object for use in the redirect callback
-            account.token = token;
-
-            return true;
         },
 
         async redirect({ url, baseUrl, account }) {
-            if (account?.token) {
-                return `${baseUrl}/api/auth/set-cookie?token=${account.token}`;
+            try {
+                if (account?.token) {
+                    // Redirect to set-cookie endpoint with token
+                    return `${baseUrl}/api/auth/set-cookie?token=${account.token}`;
+                }
+                // Default redirect
+                return url.startsWith(baseUrl) ? url : baseUrl;
+            } catch (error) {
+                console.error("Redirect error:", error);
+                return baseUrl;
             }
-            return url.startsWith("/") ? `${baseUrl}${url}` : url;
         },
 
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id || user._id; // Ensure user ID is set correctly
-                token.email = user.email;
+        async jwt({ token, user, account }) {
+            if (account?.token) {
+                token.customToken = account.token;
             }
             return token;
         },
 
         async session({ session, token }) {
-            session.user.id = token.id;
+            if (token) {
+                session.user.id = token.sub;
+                session.customToken = token.customToken;
+            }
             return session;
         },
     },
