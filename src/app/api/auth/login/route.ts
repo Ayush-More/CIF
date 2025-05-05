@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
             process.env.JWT_SECRET!,
             { expiresIn: '7d' } // Token valid for 7 days
         );
+
         const response = NextResponse.json({ message: 'Login successful', success: true, token });
+        
         response.cookies.set('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',

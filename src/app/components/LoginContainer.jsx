@@ -10,9 +10,11 @@ import { validateLoginForm } from "../utils/validation";
 import { loginUser } from "../services/auth";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuth } from "./../context/AuthContext";
+import { useSession } from 'next-auth/react';
 import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginContainer() {
+  const { data: session } = useSession();
   const {setToken} = useAuth();
   const router = useRouter();
   const { BASE_URL } = useContext(AppContext);
@@ -64,9 +66,25 @@ export default function LoginContainer() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true); // Start loader
-    await signIn("google", {
+    const result = await signIn("google", {
       callbackUrl: "/",
+      redirect: true,
+  });
+  if (session?.customToken) {
+    fetch('/api/auth/set-cookie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: session.customToken }),
+        credentials: 'include', // Important!
     });
+}
+  
+  if (result?.error) {
+      console.error('Google login error:', result.error);
+      toast.error("Failed to login with Google");
+  }
     setIsLoading(false); // Stop loader
   };
 

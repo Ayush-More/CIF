@@ -1,6 +1,8 @@
 
 import { Geist, Geist_Mono, Inter, Merriweather } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from 'next-auth/react';
+import Providers from "./components/Providers";
 import { AppProvider } from "./context/AppContext.js";
 import FindJobProvider from "./context/FindJob";
 import { CareFormProvider } from './context/CareFormContext';
@@ -45,13 +47,14 @@ export default function RootLayout({ children }) {
         <CareFormProvider>
         <FindJobProvider>
           <AppProvider>
-            <SidebarMobile/>
+            <Providers>
             <SocketProvider>
             <AuthProvider>
             {children}
             </AuthProvider>
             </SocketProvider>
-            </AppProvider>
+            </Providers>
+          </AppProvider>
         </FindJobProvider>
         </CareFormProvider>
       </body>

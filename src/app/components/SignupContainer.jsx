@@ -69,7 +69,18 @@ export default function SignupContainer() {
     setIsLoading(true); // Start loader
     await signIn("google", {
       callbackUrl: "/",
+      redirect: true,
     });
+    if (session?.customToken) {
+      fetch('/api/auth/set-cookie', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: session.customToken }),
+          credentials: 'include', // Important!
+      });
+  }
     setIsLoading(false); // Stop loader
   };
 
