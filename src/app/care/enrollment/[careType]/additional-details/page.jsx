@@ -88,8 +88,9 @@ export default function AdditionalDetails() {
 
 const fetchLocationFromGeoNames = async (postalCode, countryCode) => {
   try {
+    const protocol = process.env.NEXT_PUBLIC_APP_URL?.includes('localhost') ? 'http' : 'https';
     const response = await fetch(
-      `http://api.geonames.org/postalCodeSearchJSON?postalcode=${postalCode}&country=${countryCode}&maxRows=1&username=${GEONAMES_USERNAME}`
+      `${protocol}://api.geonames.org/postalCodeSearchJSON?postalcode=${postalCode}&country=${countryCode}&maxRows=1&username=${GEONAMES_USERNAME}`
     );
 
     if (!response.ok) {
