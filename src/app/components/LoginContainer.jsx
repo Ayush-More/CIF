@@ -3,7 +3,7 @@
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useContext } from "react";
+import { useState, useContext , useEffect } from "react";
 import { AppContext } from "../context/AppContext.js";
 import InputField from "../components/InputField";
 import { validateLoginForm } from "../utils/validation";
@@ -63,6 +63,22 @@ export default function LoginContainer() {
         }
     }
 };
+
+useEffect(()=>{
+  const handleCookie = async()=>{
+    if (session?.customToken) {
+      fetch('/api/auth/set-cookie', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: session.customToken }),
+          credentials: 'include', // Important!
+      });
+  }
+  handleCookie();
+  }
+},[session])
 
   const handleGoogleLogin = async () => {
     setIsLoading(true); // Start loader
