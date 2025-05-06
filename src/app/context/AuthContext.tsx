@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { parseCookies, setCookie, destroyCookie } from 'nookies';
-import { jwtDecode } from "jwt-decode"; // Changed import statement
+import { jwtDecode } from "jwt-decode";
 
 interface UserData {
     userId?: string;
@@ -17,7 +17,7 @@ interface AuthContextType {
     userData: UserData | null;
     setUserData: (user: UserData | null) => void;
     setToken: (token: string) => void;
-    logout: () => void;
+    logout: () => Promise<void>;
     isLoading: boolean;
 }
 
@@ -38,14 +38,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 const token = cookies.token;
 
                 if (token) {
-                    // Use jwtDecode with correct type assertion
                     const decoded = jwtDecode<UserData>(token);
                     const currentTime = Math.floor(Date.now() / 1000);
 
                     if (decoded.exp && decoded.exp > currentTime) {
                         setUserData(decoded);
                     } else {
-                        // Token is expired
                         destroyCookie(null, 'token', { path: '/' });
                         setUserData(null);
                     }
@@ -63,7 +61,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         loadUserFromToken();
 
-        // Add event listener for storage changes
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === 'auth_trigger') {
                 loadUserFromToken();
@@ -89,7 +86,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const decoded = jwtDecode<UserData>(token);
             setUserData(decoded);
 
-            // Trigger storage event for other tabs
             window.localStorage.setItem('auth_trigger', Date.now().toString());
         } catch (error) {
             console.error('Error setting token:', error);
@@ -98,10 +94,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    const logout = () => {
-        destroyCookie(null, 'token', { path: '/' });
-        setUserData(null);
-        window.localStorage.removeItem('auth_trigger');
+    const logout = async () => {
+        try {
+            // Call the logout API endpoint
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Logout request failed');
+            }
+
+            // Clear the token cookie
+            destroyCookie(null, 'token', { path: '/' });
+            
+            // Clear user data
+            setUserData(null);
+            
+            // Clear local storage items
+            localStorage.removeItem('userId');
+            localStorage.removeItem('email');
+            
+            // Trigger auth state update in other tabs
+            window.localStorage.setItem('auth_trigger', Date.now().toString());
+            
+            return Promise.resolve();
+        } catch (error) {
+            console.error('Logout failed:', error);
+            return Promise.reject(error);
+        }
     };
 
     return (

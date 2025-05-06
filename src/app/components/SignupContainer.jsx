@@ -1,18 +1,22 @@
 "use client";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext.js";
 import InputField from "../components/InputField";
 import { validateForm } from "../utils/validation";
 import { signupUser, verifyOtp } from "../services/auth.js";
 import { useCareForm } from './../context/CareFormContext';
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useAuth } from "./../context/AuthContext";
 
 export default function SignupContainer() {
+  const { data: session, status } = useSession();
+  const { setToken } = useAuth();
   const { updateForm } = useCareForm();
   const { BASE_URL } = useContext(AppContext);
   const router = useRouter();
+  const hasSetToken = useRef(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,7 +29,24 @@ export default function SignupContainer() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // NEW STATE
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Handle Google authentication success
+  useEffect(() => {
+    if (status === 'authenticated' && session?.customToken && !hasSetToken.current) {
+      hasSetToken.current = true;
+      setToken(session.customToken);
+      
+      // Get userId from session or token
+      const userId = session.user?.id || session.user?.userId;
+      if (userId) {
+        router.push(`/profile/NavProfile/${userId}`);
+      } else {
+        console.error('No user ID found in session');
+        router.push('/');
+      }
+    }
+  }, [session, status, setToken, router]);
 
   const handleChange = (field) => (e) =>
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -66,22 +87,16 @@ export default function SignupContainer() {
   };
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true); // Start loader
-    await signIn("google", {
-      callbackUrl: "/",
-      redirect: true,
-    });
-    if (session?.customToken) {
-      fetch('/api/auth/set-cookie', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token: session.customToken }),
-          credentials: 'include', // Important!
+    setIsLoading(true);
+    try {
+      await signIn("google", {
+        callbackUrl: "/profile/NavProfile",  // This will be modified with the actual userId after authentication
+        redirect: true,
       });
-  }
-    setIsLoading(false); // Stop loader
+    } catch (error) {
+      console.error('Google login error:', error);
+      setIsLoading(false);
+    }
   };
 
   const handleFacebookLogin = async () => {

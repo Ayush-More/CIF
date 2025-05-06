@@ -35,9 +35,6 @@ const authOptions = {
                     process.env.JWT_SECRET!,
                     { expiresIn: '7d' }
                 );
-                if (typeof window !== 'undefined') {
-                    window.localStorage.setItem('auth_token', token)
-                }
 
                 // Store token in user object
                 user.customToken = token;
@@ -47,36 +44,31 @@ const authOptions = {
                 return false;
             }
         },
-        async redirect({ url, baseUrl, account }) {
-            try {
-                if (account?.token) {
-                    // Redirect to set-cookie endpoint with token
-                    return `${baseUrl}/api/auth/set-cookie?token=${account.token}`;
-                }
-                // Default redirect
-                return url.startsWith(baseUrl) ? url : baseUrl;
-            } catch (error) {
-                console.error("Redirect error:", error);
-                return baseUrl;
-            }
+        async redirect({ url, baseUrl }) {
+            // Always redirect to dashboard after authentication
+            return `${baseUrl}/dashboard`;
         },
 
-        async session({ session, token, user }) {
+        async session({ session, token }) {
             // Pass the custom token to the session
-            session.customToken = token.customToken;
+            if (token.customToken) {
+                session.customToken = token.customToken;
+            }
             return session;
         },
 
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
             // Pass the custom token from user to JWT token
             if (user?.customToken) {
                 token.customToken = user.customToken;
             }
             return token;
         }
-
     },
     secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+        signIn: '/login',
+    },
 };
 
 const handler = NextAuth(authOptions);

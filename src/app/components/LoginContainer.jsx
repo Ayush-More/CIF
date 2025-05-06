@@ -1,21 +1,21 @@
 "use client";
 
 import { FcGoogle } from "react-icons/fc";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext.js";
 import InputField from "../components/InputField";
 import { validateLoginForm } from "../utils/validation";
 import { loginUser } from "../services/auth";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuth } from "./../context/AuthContext";
-import { useSession } from 'next-auth/react';
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginContainer() {
-  const { data: session } = useSession();
-  const {setToken} = useAuth();
+  const { data: session, status } = useSession();
+  const { setToken } = useAuth();
   const router = useRouter();
   const { BASE_URL } = useContext(AppContext);
   const [formData, setFormData] = useState({
@@ -25,7 +25,25 @@ export default function LoginContainer() {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // NEW STATE
+  const [isLoading, setIsLoading] = useState(false);
+  const hasSetToken = useRef(false);
+
+  // Handle Google authentication success
+  useEffect(() => {
+    if (status === 'authenticated' && session?.customToken && !hasSetToken.current) {
+      hasSetToken.current = true;
+      setToken(session.customToken);
+      
+      // Get userId from session or token
+      const userId = session.user?.id || session.user?.userId;
+      if (userId) {
+        router.push(`/profile/NavProfile/${userId}`);
+      } else {
+        console.error('No user ID found in session');
+        router.push('/');
+      }
+    }
+  }, [session, status, setToken, router]);
 
   const handleChange = (field) => (e) =>
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -35,57 +53,46 @@ export default function LoginContainer() {
     setIsSubmitted(true);
 
     if (validateLoginForm(formData, setErrors)) {
-        setIsLoading(true);
-        try {
-            const result = await loginUser(BASE_URL, {
-                email: formData.email,
-                password: formData.password,
-            });
+      setIsLoading(true);
+      try {
+        const result = await loginUser(BASE_URL, {
+          email: formData.email,
+          password: formData.password,
+        });
 
-            if (result.success && result.token) {
-              console.log(result.token)
-                setToken(result.token); // This will update the auth context and set the cookie
-                router.push('/');
-            } else {
-                setErrors((prev) => ({
-                    ...prev,
-                    email: result.message || "Invalid email or password",
-                }));
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            setErrors((prev) => ({
-                ...prev,
-                email: "An error occurred during login",
-            }));
-        } finally {
-            setIsLoading(false);
+        if (result.success && result.token) {
+          setToken(result.token);
+          router.push('/dashboard');
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            email: result.message || "Invalid email or password",
+          }));
         }
+      } catch (error) {
+        console.error('Login error:', error);
+        setErrors((prev) => ({
+          ...prev,
+          email: "An error occurred during login",
+        }));
+      } finally {
+        setIsLoading(false);
+      }
     }
-};
+  };
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true); // Start loader
-    const result = await signIn("google", {
-      callbackUrl: "/",
-      redirect: true,
-  });
-  if (session?.customToken) {
-    fetch('/api/auth/set-cookie', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: session.customToken }),
-        credentials: 'include', // Important!
-    });
-}
-  
-  if (result?.error) {
-      console.error('Google login error:', result.error);
+    setIsLoading(true);
+    try {
+      await signIn("google", {
+        callbackUrl: "/dashboard",
+        redirect: true,
+      });
+    } catch (error) {
+      console.error('Google login error:', error);
       toast.error("Failed to login with Google");
-  }
-    setIsLoading(false); // Stop loader
+      setIsLoading(false);
+    }
   };
 
   // const handleFacebookLogin = () => {

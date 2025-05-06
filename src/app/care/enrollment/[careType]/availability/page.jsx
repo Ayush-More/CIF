@@ -186,12 +186,12 @@ export default function Availability() {
               <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/unactive.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Additional Details</div>
+                <div className="text-[11px]">Additionals</div>
               </div>
               <div className="bg-[#EF5744] h-[2px] w-10 mb-7"></div>
               <div className="flex flex-col items-center gap-2">
                 <img src="/Icons/unactive.svg" alt="" className="h-7" />
-                <div className="text-[11px]">Personal Details</div>
+                <div className="text-[11px]">Personal</div>
               </div>
             </div>
           </div>

@@ -1,12 +1,16 @@
 "use client";
-import { useState, useEffect, useRef , useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { UserCircle2 } from "lucide-react";
 import { AppContext } from "../context/AppContext";
+import { signOut, useSession } from "next-auth/react";
+import { useAuth } from "./../context/AuthContext";
 
 export default function Navbar() {
   const { isOpen, setIsOpen } = useContext(AppContext);
+  const { data: session, status } = useSession();
+  const { logout: authLogout, userData } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +20,6 @@ export default function Navbar() {
   const [showCareTypes, setShowCareTypes] = useState(false);
   const careTypesRef = useRef(null);
 
-  
   const router = useRouter();
   const pathname = usePathname();
   const profileMenuRef = useRef(null);
@@ -60,7 +63,36 @@ export default function Navbar() {
       setLoading(false);
     }
   };
-  console.log(userInfo , 222222)
+
+  // Initial auth check
+  useEffect(() => {
+    verifyAuth();
+  }, []);
+
+  // Sync authentication states
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (status === 'authenticated' && session) {
+      setIsAuthenticated(true);
+      if (!userInfo) {
+        verifyAuth();
+      }
+    } else if (status === 'unauthenticated' && !userData) {
+      setIsAuthenticated(false);
+      setUserInfo(null);
+    }
+  }, [status, session]);
+
+  // Also check userData from AuthContext
+  useEffect(() => {
+    if (userData) {
+      setIsAuthenticated(true);
+      setUserInfo(prev => prev || { id: userData.userId, email: userData.email, name: userData.name });
+      setLoading(false);
+    }
+  }, [userData]);
+
   const careTypes = [
     "Tutoring",
     "Child Care",
@@ -89,23 +121,24 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (response.ok) {
-        setIsAuthenticated(false);
-        setUserInfo(null);
-        // Trigger auth state update in other tabs
-        window.localStorage.setItem('auth_trigger', Date.now().toString());
-        router.push('/login');
-      } else {
-        throw new Error('Logout failed');
-      }
+      
+      // First, sign out from NextAuth
+      await signOut({ redirect: false });
+      
+      // Then, clear the custom token
+      await authLogout();
+      
+      // Clear local storage
+      localStorage.removeItem('userId');
+      localStorage.removeItem('email');
+      
+      // Update local state
+      setIsAuthenticated(false);
+      setUserInfo(null);
+      setShowProfileMenu(false);
+      
+      // Redirect to login page
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
       setError('Logout failed. Please try again.');
@@ -113,14 +146,6 @@ export default function Navbar() {
       setLoading(false);
     }
   };
-
-  // Verify auth on mount and every 5 minutes
-  useEffect(() => {
-    verifyAuth();
-    const interval = setInterval(verifyAuth, 5 * 60 * 1000); // Check every 5 minutes
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Listen for auth changes in other tabs
   useEffect(() => {
@@ -238,25 +263,25 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-[26px]">
           {loading ? (
             <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse" />
-          ) : isAuthenticated && userInfo ? (
+          ) : (isAuthenticated || status === 'authenticated' || userData) ? (
             <div className="relative" ref={profileMenuRef}>
               <div
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                 <div className="w-full h-full rounded-full bg-gradient-to-br from-[#EF5744] to-[#FF8066] p-[2px] transition-all duration-300 transform group-hover:rotate-12">
-                                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                        <svg 
-                                    viewBox="0 0 24 24" 
-                                    width="30" 
-                                    height="30" 
-                                    fill="#EF5744" // Using your website's theme color
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                                  </svg>
-                                        </div>
-                                    </div>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EF5744] to-[#FF8066] p-[2px] transition-all duration-300 transform hover:scale-105">
+                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      width="30" 
+                      height="30" 
+                      fill="#EF5744"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                  </div>
+                </div>
               </div>
               
               {showProfileMenu && (
@@ -264,20 +289,17 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);
-                      router.push(`/profile/NavProfile/${userInfo.id}`);
+                      router.push(`/profile/NavProfile/${userInfo?.id || userData?.userId}`);
                     }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   >
                     Profile
                   </button>
                   <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      handleLogout();
-                    }}
+                    onClick={handleLogout}
                     className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
                   >
-                    Logout
+                    {loading ? 'Logging out...' : 'Logout'}
                   </button>
                 </div>
               )}
