@@ -81,6 +81,22 @@ export default function LoginContainer() {
     }
   };
 
+useEffect(()=>{
+  const handleCookie = async()=>{
+    if (session?.customToken) {
+      fetch('/api/auth/set-cookie', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: session.customToken }),
+          credentials: 'include', // Important!
+      });
+  }
+  handleCookie();
+  }
+},[session])
+
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
