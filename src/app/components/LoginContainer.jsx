@@ -62,7 +62,7 @@ export default function LoginContainer() {
 
         if (result.success && result.token) {
           setToken(result.token);
-          router.push('/dashboard');
+          router.push('/');
         } else {
           setErrors((prev) => ({
             ...prev,
@@ -101,7 +101,7 @@ useEffect(()=>{
     setIsLoading(true);
     try {
       await signIn("google", {
-        callbackUrl: "/dashboard",
+        callbackUrl: "/",
         redirect: true,
       });
     } catch (error) {
