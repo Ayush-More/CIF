@@ -75,9 +75,33 @@ const ChatSidebar = ({ selectedChat, setSelectedChat, currentUserId }) => {
         <div className="w-96 bg-white rounded-2xl shadow-2xl flex flex-col">
             {/* Header */}
             <div className="p-6 border-b border-gray-100">
-                <div className="flex items-center justify-between mb-6">
+                {/* <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
-                </div>
+                </div> */}
+                 <div className="flex items-center justify-between mb-6">
+        {/* Back button and title group */}
+        <div className="flex items-center gap-3">
+            <button 
+                onClick={() => window.history.back()}
+                className="p-2 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:text-[#EF5744] group"
+            >
+                <svg 
+                    className="w-6 h-6 text-gray-600 group-hover:text-[#EF5744] transition-colors duration-200" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                >
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                </svg>
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
+        </div>
+    </div>
                 {/* Search Input */}
                 <div className="relative">
                     <input

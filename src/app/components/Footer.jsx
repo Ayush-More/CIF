@@ -1,4 +1,8 @@
+"use client";
+import { useRouter } from "next/navigation";
+
 export default function Footer() {
+    const router = useRouter();
   return (
     <div className="bg-[#081253] px-6 py-[20px] mt-20">
       {/* <div className="max-w-7xl mx-auto md:px-10 lg:px-14 xl:px-20">
@@ -56,9 +60,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row md:mt-[51px] border-t border-[#ffffff21] mb-6  gap-3 items-center md:items-start md:gap-[32px] text-[#fff] text-[14px]">
           <div>© 2024 Company. All rights reserved.</div>
           <div className="flex gap-[19px] cursor-pointer">
-            <span>Terms</span>
-            <span>Privacy</span>
-            <span>Cookies</span>
+            <span onClick={()=>router.push(`/terms`)} >Terms</span>
+            <span onClick={()=>router.push(`/privacy`)}>Privacy</span>
           </div>
         </div>
       {/* </div> */}

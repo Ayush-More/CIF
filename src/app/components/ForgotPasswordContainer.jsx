@@ -68,7 +68,7 @@ export default function ForgotPasswordContainer() {
         Get OTP
       </button>
 
-      <div className="flex justify-center gap-5 mt-5 text-[13px]">
+      {/* <div className="flex justify-center gap-5 mt-5 text-[13px]">
         Try to login with social media
       </div>
 
@@ -78,7 +78,7 @@ export default function ForgotPasswordContainer() {
       >
         <FcGoogle className="text-[20px]" />
         Signup with Google
-      </button>
+      </button> */}
     </div>
   );
 }

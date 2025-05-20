@@ -6,7 +6,7 @@ import ProfileDialog from './ProfileDialog';
 import MeetingMessage from "./MeetingMessage";
 import { useSocket } from './../context/SocketContext';
 
-const ChatMain = ({ selectedChat, currentUserId }) => {
+const ChatMain = ({ selectedChat, currentUserId , setSelectedChat }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -328,50 +328,6 @@ const handleInputChange = (e) => {
 
         fetchChatDetails();
     }, [selectedChat, currentUserId]);
-
-    // const handleSendMessage = async (e) => {
-    //     e.preventDefault();
-    //     if (!message.trim() || !socket || !isConnected || !selectedChat) return;
-
-    //     try {
-    //         const result = await handleChatOperation('saveChat', {
-    //             roomID: selectedChat,
-    //             message: message.trim(),
-    //             sender: currentUserId
-    //         });
-
-    //         if (result) {
-    //             // Add new message to the list
-    //             const newMessage = {
-    //                 id: result.id,
-    //                 message: message.trim(),
-    //                 sender: currentUserId,
-    //                 created_at: new Date().toISOString(), // Ensure proper date format
-    //                 status: 0
-    //             };
-    //             setMessages(prevMessages => [...prevMessages, newMessage]);
-    //             setMessage('');
-    //         }
-    //         // Send message through socket
-    //         socket.emit('send_message', {
-    //             roomId: selectedChat,
-    //             message: message.trim(),
-    //             sender: currentUserId,
-    //             sender_name: localStorage.getItem('username')
-    //         });
-
-    //         // Clear input and typing status
-    //         setInputMessage('');
-    //         setIsTyping(false);
-    //         if (typingTimeoutRef.current) {
-    //             clearTimeout(typingTimeoutRef.current);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error sending message:', error);
-    //         toast.error('Failed to send message');
-    //     }
-    // };
-
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!message.trim() || !socket || !isConnected || !selectedChat) return;
@@ -440,6 +396,11 @@ const handleInputChange = (e) => {
         );
     }
 
+      const handleCloseChat = () => {
+        // Close the chat and redirect to home or previous page
+        setSelectedChat(!selectedChat) // or wherever you want to redirect
+    };
+
     return (
         <>
         <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-2xl">
@@ -459,13 +420,13 @@ const handleInputChange = (e) => {
                                     {chatInfo?.otherUser?.name?.charAt(0) || 'U'}
                                 </div>
                             )}
-                            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-white" />
+                            {/* <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-white" /> */}
                         </div>
                         <div className="ml-4">
                             <h2 className="text-xl font-semibold text-gray-800">
                                 {chatInfo?.otherUser?.name || 'User'}
                             </h2>
-                            <p className="text-sm text-green-500">Online</p>
+                            {/* <p className="text-sm text-green-500">Online</p> */}
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -479,7 +440,26 @@ const handleInputChange = (e) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                         </button>
+                         <button  
+                            onClick={handleCloseChat}  
+                            className="p-2 hover:bg-gray-50 rounded-xl transition-colors duration-200 hover:text-[#EF5744]"
+                        >
+                            <svg 
+                                className="w-6 h-6 text-gray-600 hover:text-[#EF5744]" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth="2" 
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
                     </div>
+                   
                 </div>
             </div>
 
