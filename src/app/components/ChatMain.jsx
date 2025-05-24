@@ -16,6 +16,7 @@ const ChatMain = ({ selectedChat, currentUserId , setSelectedChat }) => {
     const [chatProfile, setChatProfile] = useState(null);
     const [loadingProfile, setLoadingProfile] = useState(false);
     const messagesEndRef = useRef(null);
+    const [isUserOnline, setIsUserOnline] = useState(false);
     const [typingUsers, setTypingUsers] = useState(new Set());
     const typingTimeoutRef = useRef(null);
     const { socket, isConnected } = useSocket();
@@ -81,6 +82,37 @@ const handleMeetingCreated = async (meetingData) => {
         toast.error('Failed to send meeting invitation');
     }
 };
+
+ useEffect(() => {
+        if (socket && selectedChat && chatInfo?.otherUser?.user_id) {
+            // Emit event to check user status when chat is selected
+            socket.emit('check_user_status', chatInfo.otherUser.user_id);
+
+            // Listen for user status updates
+            const handleUserStatus = ({ userId, status }) => {
+                if (userId === chatInfo.otherUser.user_id) {
+                    setIsUserOnline(status === 'online');
+                }
+            };
+
+            // Add listeners for user status
+            socket.on('user_status', handleUserStatus);
+            socket.on('user_connected', ({ userId }) => {
+                if (userId === chatInfo.otherUser.user_id) setIsUserOnline(true);
+            });
+            socket.on('user_disconnected', ({ userId }) => {
+                if (userId === chatInfo.otherUser.user_id) setIsUserOnline(false);
+            });
+
+            // Cleanup
+            return () => {
+                socket.off('user_status', handleUserStatus);
+                socket.off('user_connected');
+                socket.off('user_disconnected');
+            };
+        }
+    }, [socket, selectedChat, chatInfo?.otherUser?.user_id]);
+
 const handleInputChange = (e) => {
     setMessage(e.target.value);
 };
@@ -421,12 +453,17 @@ const handleInputChange = (e) => {
                                 </div>
                             )}
                             {/* <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-white" /> */}
+                             <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                                isUserOnline ? 'bg-green-500' : 'bg-gray-400'
+                            }`} />
                         </div>
                         <div className="ml-4">
                             <h2 className="text-xl font-semibold text-gray-800">
                                 {chatInfo?.otherUser?.name || 'User'}
                             </h2>
-                            {/* <p className="text-sm text-green-500">Online</p> */}
+                            <p className={`text-sm ${isUserOnline ? 'text-green-500' : 'text-gray-500'}`}>
+                                {isUserOnline ? 'Online' : 'Offline'}
+                            </p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">

@@ -7,6 +7,14 @@ const SocketContext = createContext();
 export function SocketProvider({ children }) {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
+    const userId = localStorage.getItem('userId');
+
+    useEffect(() => {
+    if (socket && userId) {
+        // Emit user_connected event when socket connects
+        socket.emit('user_connected', userId);
+    }
+}, [socket, userId]);
 
     useEffect(() => {
         // Initialize socket connection
