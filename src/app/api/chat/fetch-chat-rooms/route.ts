@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
                             select: 'email'
                         });
 
-                        console.log(userCare)
                         return {
                             user_id: userId,
                             email: userCare?.user_id?.email || "No email",
@@ -72,6 +71,8 @@ export async function POST(req: NextRequest) {
                         };
                     })
                 );
+
+                console.log(usersWithProfiles)
 
                 // Convert mongoose document to plain object and add profiles
                 const plainChatRoom = {

@@ -5,6 +5,7 @@ import MeetingDialog from './MeetingDialog';
 import ProfileDialog from './ProfileDialog';
 import MeetingMessage from "./MeetingMessage";
 import { useSocket } from './../context/SocketContext';
+import { sendEmailNotification } from '../services/email';
 
 const ChatMain = ({ selectedChat, currentUserId , setSelectedChat }) => {
     const [message, setMessage] = useState('');

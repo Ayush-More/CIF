@@ -140,6 +140,16 @@ export default function ResetPasswordContainer() {
       {errors.general && (
         <p className="text-red-500 text-sm mt-2">{errors.general}</p>
       )}
+      <div className="bg-gray-50 p-2 rounded-lg shadow-sm border border-gray-200 ml-4">
+      <h3 className="text-[12px] font-semibold text-gray-700 mb-2">Password Requirements:</h3>
+      <ul className="text-[10px] text-gray-600 space-y-0.5">
+        <li>• Minimum 8 characters long</li>
+        <li>• At least one uppercase letter (A-Z)</li>
+        <li>• At least one lowercase letter (a-z)</li>
+        <li>• At least one number (0-9)</li>
+        <li>• At least one special character (!@#$%^&*)</li>
+      </ul>
+    </div>
 
       <button
         className="text-[#fff] bg-[#EF5744] w-full rounded-md text-[14px] mt-5 py-[8px] cursor-pointer"
