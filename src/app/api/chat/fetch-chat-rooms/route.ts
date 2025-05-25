@@ -7,6 +7,7 @@ import { Types } from 'mongoose';
 // Define a plain object type for chat room data
 interface UserProfile {
     user_id: string;
+
     profilePic: string;
     name: string;
 }
@@ -57,9 +58,15 @@ export async function POST(req: NextRequest) {
             chatRooms.map(async (chatRoom) => {
                 const usersWithProfiles = await Promise.all(
                     chatRoom.users.map(async (userId) => {
-                        const userCare = await Care.findOne({ user_id: userId });
+                        const userCare = await Care.findOne({ user_id: userId }).populate({
+                            path: 'user_id',
+                            select: 'email'
+                        });
+
+                        console.log(userCare)
                         return {
                             user_id: userId,
+                            email: userCare?.user_id?.email || "No email",
                             profilePic: userCare?.profilePic || "https://cdn-icons-png.flaticon.com/512/1808/1808546.png",
                             name: userCare?.username || "User",
                         };

@@ -345,6 +345,8 @@ const handleInputChange = (e) => {
                     const otherUser = currentRoom.usersWithProfiles.find(
                         user => user.user_id !== currentUserId
                     );
+                    console.log(currentRoom , 3333);
+                    console.log(otherUser , 222)
                     setChatInfo({
                         otherUser,
                         messages: currentRoom.messages || []
@@ -392,7 +394,23 @@ const handleInputChange = (e) => {
                         // Force the textarea to reset its value
                         textareaRef.current.value = '';
                     }
-                    }
+                }
+                console.log(chatInfo , 44444)
+
+                if (!isUserOnline && chatInfo?.otherUser?.email) {
+                try {
+                    await sendEmailNotification(
+                        chatInfo.otherUser.email,
+                        localStorage.getItem('username'),
+                        formattedMessage.length > 100 
+                            ? formattedMessage.substring(0, 100) + '...' 
+                            : formattedMessage
+                    );
+                } catch (emailError) {
+                    console.error('Failed to send email notification:', emailError);
+                    // Don't throw the error as the message was still sent successfully
+                }
+            }
             
             // Send message through socket
             socket.emit('send_message', {
