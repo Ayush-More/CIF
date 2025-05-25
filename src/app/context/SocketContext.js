@@ -7,7 +7,13 @@ const SocketContext = createContext();
 export function SocketProvider({ children }) {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
-    const userId = localStorage.getItem('userId');
+    const [userId, setUserId] = useState(null); // store client-only value
+       useEffect(() => {
+        // Access localStorage only on the client
+        const storedUserId = localStorage.getItem('userId');
+        setUserId(storedUserId);
+    }, []);
+
 
     useEffect(() => {
     if (socket && userId) {
