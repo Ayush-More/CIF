@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "./../context/AuthContext";
 
 const navbarData = [
   { name: "Home", link: "/" },
@@ -14,16 +15,16 @@ const navbarData = [
     subitem: [
       "Tutoring",
       "Child Care",
-      "Meal Care",
+      "Meal Service",
       "Mental and Physical Health",
     ],
   },
-  { name: "Chat", link: "/chat" },
+  { name: "Chat", link: "/chat-page" },
 ];
 
-export default function Sidebar() {
-  const { isOpen, setIsOpen } = useContext(AppContext);
+export default function SidebarMobile({ isOpen, setIsOpen }) {
   const [openItems, setOpenItems] = useState({});
+  const { logout: authLogout, userData } = useAuth();
   const router = useRouter();
 
   const toggleSubitems = (index) => {
@@ -43,7 +44,7 @@ export default function Sidebar() {
 
   const handleSubitemClick = (sub) => {
     setIsOpen(false);
-    router.push(`/search?query=${encodeURIComponent(sub)}`);
+    router.push(`/search?type=${encodeURIComponent(sub)}`);
   };
 
   return (
@@ -124,7 +125,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="flex px-6 mt-10 items-center gap-[26px]">
+      {/* <div className="flex px-6 mt-10 items-center gap-[26px]">
         <span
           onClick={() => {
             setIsOpen(false);
@@ -143,7 +144,31 @@ export default function Sidebar() {
         >
           Join now
         </button>
-      </div>
+      </div> */}
+
+      {userData && (
+        <div className="flex px-6 mt-10 items-center gap-[26px]">
+          <span
+            onClick={() => {
+              setIsOpen(false);
+              router.push("/login");
+            }}
+            className="text-[16px] cursor-pointer font-[500] text-[#8C746A]"
+          >
+            Login
+          </span>
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              router.push("/signup");
+            }}
+            className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
+          >
+            Join now
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

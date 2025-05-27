@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import SidebarMobile from "./SidebarMobile";
 import { UserCircle2 } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { signOut, useSession } from "next-auth/react";
@@ -18,6 +19,7 @@ export default function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [error, setError] = useState(null);
   const [showCareTypes, setShowCareTypes] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const careTypesRef = useRef(null);
 
   const router = useRouter();
@@ -323,7 +325,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <div
+        {/* <div
            onClick={() => setIsOpen(!isOpen)} // Toggle Navbar visibility
           className="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
         >
@@ -331,6 +333,18 @@ export default function Navbar() {
           <span className="block h-[3px] w-7.5 bg-[#000] mt-2"></span>
           <span className="block h-[3px] w-5 bg-[#000] mt-2"></span>
         </div>
+      </div> */}
+      <div
+        onClick={() => setIsSidebarOpen(true)}
+        className="md:hidden flex flex-col items-end cursor-pointer transition-all duration-500"
+      >
+        <span className="block h-[3px] w-5 bg-[#000]"></span>
+        <span className="block h-[3px] w-7.5 bg-[#000] mt-2"></span>
+        <span className="block h-[3px] w-5 bg-[#000] mt-2"></span>
+      </div>
+
+      {/* Mobile Sidebar */}
+      <SidebarMobile isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       </div>
 
       {/* Error Toast */}
