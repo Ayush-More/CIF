@@ -1,8 +1,9 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useState , useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useAuth } from "./../context/AuthContext";
 
 const navbarData = [
@@ -24,8 +25,13 @@ const navbarData = [
 
 export default function SidebarMobile({ isOpen, setIsOpen }) {
   const [openItems, setOpenItems] = useState({});
+  const [isAuthenticated , setIsAuthenticated] = useState(false);
+  const { data: session, status } = useSession();
+    const [userInfo, setUserInfo] = useState(null);
   const { logout: authLogout, userData } = useAuth();
   const router = useRouter();
+
+  
 
   const toggleSubitems = (index) => {
     setOpenItems((prev) => ({
@@ -41,11 +47,66 @@ export default function SidebarMobile({ isOpen, setIsOpen }) {
       setIsOpen(false);
     }
   };
+    const verifyAuth = async () => {
+    try {
+
+      const response = await fetch('/api/auth/verify', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.authenticated) {
+        setIsAuthenticated(true);
+        setUserInfo(data.user);
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('email', data.user.email);
+      } else {
+        setIsAuthenticated(false);
+        setUserInfo(null);
+        
+        // If we're on a protected route, redirect to login
+        // if (pathname === '/search' || pathname === '/profile') {
+        //   router.push('/login');
+        // }
+      }
+    } catch (error) {
+      console.error('Auth verification failed:', error);
+      setIsAuthenticated(false);
+      setUserInfo(null);
+    } 
+  };
+
+  // Initial auth check
+  useEffect(() => {
+    verifyAuth();
+  }, []);
 
   const handleSubitemClick = (sub) => {
     setIsOpen(false);
     router.push(`/search?type=${encodeURIComponent(sub)}`);
   };
+
+
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (status === 'authenticated' && session) {
+      setIsAuthenticated(true);
+      if (!userInfo) {
+        verifyAuth();
+      }
+    } else if (status === 'unauthenticated' && !userData) {
+      setIsAuthenticated(false);
+    }
+  }, [status, session]);
+
+  
+  
 
   return (
     <div
@@ -125,29 +186,37 @@ export default function SidebarMobile({ isOpen, setIsOpen }) {
         </div>
       </div>
 
-      {/* <div className="flex px-6 mt-10 items-center gap-[26px]">
-        <span
-          onClick={() => {
-            setIsOpen(false);
-            router.push("/login");
-          }}
-          className="text-[16px] cursor-pointer font-[500] text-[#8C746A]"
-        >
-          Login
-        </span>
-        <button
-          onClick={() => {
-            setIsOpen(false);
-            router.push("/signup");
-          }}
-          className="bg-[#EF5744] px-[19px] py-[8px] rounded-full text-[#fff] text-[14px] cursor-pointer"
-        >
-          Join now
-        </button>
-      </div> */}
+      {(isAuthenticated || status === 'authenticated' || userData) ? (
+        <div className="px-6">
+              <div
+                className="flex justify-between items-center h-14"
+                onClick={() => handleItemClick(item, index)}
+              >
+                <Link
+                  href="/profile"
+                  className="flex-1 hover:text-[#EF5744] text-[#8C746A] font-[500]"
+                >
+                  Profile
+                </Link>
+                
+              </div>
+              <div className="h-[2px] bg-[#8c746a1d]"></div>
+               <div
+                className="flex justify-between items-center h-14"
+                onClick={() => handleItemClick(item, index)}
+              >
+                <Link
+                  href="/login"
+                  className="flex-1 hover:text-[#EF5744] text-[#8C746A] font-[500]"
+                >
+                  logout
+                </Link>
+                
+              </div>
+              <div className="h-[2px] bg-[#8c746a1d]"></div>
+              </div>
 
-      {userData && (
-        <div className="flex px-6 mt-10 items-center gap-[26px]">
+      ):( <div className="flex px-6 mt-10 items-center gap-[26px]">
           <span
             onClick={() => {
               setIsOpen(false);
@@ -166,8 +235,7 @@ export default function SidebarMobile({ isOpen, setIsOpen }) {
           >
             Join now
           </button>
-        </div>
-      )}
+        </div>)}
 
     </div>
   );

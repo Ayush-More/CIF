@@ -52,9 +52,9 @@ export default function Navbar() {
         setUserInfo(null);
         
         // If we're on a protected route, redirect to login
-        if (pathname === '/search' || pathname === '/profile') {
-          router.push('/login');
-        }
+        // if (pathname === '/search' || pathname === '/profile') {
+        //   router.push('/login');
+        // }
       }
     } catch (error) {
       console.error('Auth verification failed:', error);
