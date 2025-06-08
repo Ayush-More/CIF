@@ -2,6 +2,7 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { AppContext } from "../context/AppContext.js";
+import { validateForm } from "../utils/validation";
 import InputField from "./InputField";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { resetPassword } from "../services/auth";
@@ -41,6 +42,16 @@ export default function ResetPasswordContainer() {
     if (!password) {
       setErrors((prev) => ({ ...prev, password: "Password is required" }));
       setIsLoading(false); // Stop the loader
+      return;
+    }
+
+      // Use validateForm for password & email validation
+    const isValid = validateForm(
+      { email, password }, // Or just {password} if you want to skip email here
+      setErrors
+    );
+    if (!isValid) {
+      setIsLoading(false);
       return;
     }
 

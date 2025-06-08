@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import connectToDatabase from './../../../../lib/mongodb';
 import User from './../../../../lib/models/User';
 import PasswordReset from './../../../../lib/models/PasswordReset';
+import { sendEmail } from '../../../../lib/email';
 
 export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
@@ -32,6 +33,13 @@ export async function POST(req: NextRequest) {
 
         // Remove OTP entry after successful reset
         await PasswordReset.deleteOne({ email });
+
+        // Send confirmation email
+        await sendEmail(
+            email,
+            'Password Reset Successful',
+            'Your password has been successfully reset. If you did not perform this action, please contact support immediately.'
+        );
 
         return NextResponse.json({ message: 'Password reset successfully', success: true });
     } catch (error) {

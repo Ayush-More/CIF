@@ -17,7 +17,6 @@ export async function POST(request) {
         });
 
         // Send email
-        console.log("hiiiii")
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: recipientEmail,

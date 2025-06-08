@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import connectToDatabase from './../../../../lib/mongodb';
 import User from './../../../../lib/models/User';
+import { sendLoginNotificationEmail } from '../../../../lib/email';
 
 export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
@@ -27,9 +28,14 @@ export async function POST(req: NextRequest) {
             process.env.JWT_SECRET!,
             { expiresIn: '7d' } // Token valid for 7 days
         );
+        await sendLoginNotificationEmail(email, {
+            time: new Date().toISOString(),
+            username: user.fullName || email,
+        });
+
 
         const response = NextResponse.json({ message: 'Login successful', success: true, token });
-        
+
         response.cookies.set('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
